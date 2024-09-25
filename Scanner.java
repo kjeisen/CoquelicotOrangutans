@@ -1,7 +1,12 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 class Scanner {
     public static void main(String[] args) {
+        // get int value of char
         make_map();
         make_array();
         System.out.println( array.get(current_state.index).get(characterToIndex.get('f')));
@@ -10,27 +15,31 @@ class Scanner {
     }
     public static List<List<State>> array = new ArrayList<List<State>>(); 
 
-    public static Map<Character, Integer> characterToIndex = new HashMap<>();;
-    public static State current_state = State.start;
+    public static Map<Character, Integer> characterToIndex = new HashMap<>();
+    public static State current_state = State.START;
 
     public static void make_array() {
-        array.add(new ArrayList<State>());
-        array.get(0).addAll(Arrays.asList(State.Variable,State.Variable,
-        State.Variable,State.Variable,State.e,State.f,State.Variable,
-        State.Variable,State.i,State.Variable,State.Variable,State.Variable,
-        State.Variable,State.Variable,State.Variable,State.Variable,State.Variable,
-        State.Variable,State.Variable,State.Variable,State.Variable,State.Variable,
-        State.w,State.Variable,State.Variable,State.Variable,State.Variable,State.Variable,
-        State.Variable,State.Variable,State.Variable,State.Variable,State.Variable,
-        State.Variable,State.Variable,State.Variable,State.Variable,State.Variable,
-        State.Variable,State.Variable,State.Variable,State.Variable,State.Variable,
-        State.Variable,State.Variable,State.Variable,State.Variable,State.Variable,
-        State.Variable,State.Variable,State.Variable,State.Variable,State.int_value,
-        State.int_value,State.int_value,State.int_value,State.int_value,State.int_value,
-        State.int_value,State.int_value,State.int_value,State.int_value,State.float_value,
-        State.int_value,State.Addition,State.Divide,State.Multiply,State.OpenParenthesis,
-        State.ClosedParenthesis,State.OpenBracket,State.ClosedBracket,State.Less,State.Greater,State.Assign,State.Exclaim,State.Variable,State.start));
+        String csvFile = "transition_table.csv";
+        BufferedReader br = null;
+        String line = "";
+        try {
+            br = new BufferedReader(new FileReader(csvFile));
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] states = line.split(",");
+                List<State> temp = new ArrayList<State>();
+                for (int i = 1; i < states.length; i++) {
+                    temp.add(State.valueOf(states[i].toUpperCase()));
+                }
+                array.add(temp);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
     // Making the map from characters to indexs
     public static void make_map() {
         characterToIndex.put('a',0);
@@ -118,52 +127,53 @@ class Scanner {
     }
     // Enums for all the states with and index associated
     public enum State {
-        start(0),
-        f(1),
-        fo(2),
-        for_keyword(3),
-        fl(4),
-        flo(5),
-        floa(6),
-        float_keyword(7),
-        i(8),
-        if_keyword(9),
-        in(10),
-        int_keyword(11),
-        e(12),
-        el(13),
-        els(14),
-        else_keyword(15),
-        w(16),
-        wh(17),
-        whi(18),
-        whil(19),
-        while_keyword(20),
-        Variable(21),
-        int_value(22),
-        float_value(23),
-        OpenBracket(24),
-        ClosedBracket(25),
-        OpenParenthesis(26),
-        ClosedParenthesis(27),
-        Exclaim(28),
-        Unequal(29),
-        Greater(30),
-        GreaterOrEqual(31),
-        Less(32),
-        LessOrEqual(33),
-        Assign(34),
-        Equal(35),
-        Addition(36),
-        Increment(37),
-        AdditionAssignment(38),
-        Subtract(39),
-        Decrement(40),
-        SubtractionAssignment(41),
-        Multiply(42),
-        MultiplyAssignment(43),
-        Divide(44),
-        DivideAssignment(45);
+        START(0),
+        F(1),
+        FO(2),
+        FOR_KEYWORD(3),
+        FL(4),
+        FLO(5),
+        FLOA(6),
+        FLOAT_KEYWORD(7),
+        I(8),
+        IF_KEYWORD(9),
+        IN(10),
+        INT_KEYWORD(11),
+        E(12),
+        EL(13),
+        ELS(14),
+        ELSE_KEYWORD(15),
+        W(16),
+        WH(17),
+        WHI(18),
+        WHIL(19),
+        WHILE_KEYWORD(20),
+        VARIABLE(21),
+        INT_VALUE(22),
+        FLOAT_VALUE(23),
+        OPENBRACKET(24),
+        CLOSEDBRACKET(25),
+        OPENPARENTHESIS(26),
+        CLOSEDPARENTHESIS(27),
+        EXCLAIM(28),
+        UNEQUAL(29),
+        GREATER(30),
+        GREATEROREQUAL(31),
+        LESS(32),
+        LESSOREQUAL(33),
+        ASSIGN(34),
+        EQUAL(35),
+        ADDITION(36),
+        INCREMENT(37),
+        ADDITIONASSIGNMENT(38),
+        SUBTRACT(39),
+        DECREMENT(40),
+        SUBTRACTIONASSIGNMENT(41),
+        MULTIPLY(42),
+        MULTIPLYASSIGNMENT(43),
+        DIVIDE(44),
+        DIVIDEASSIGNMENT(45),
+        NULL(46);
         public final int index;
         State(int index)
         {
