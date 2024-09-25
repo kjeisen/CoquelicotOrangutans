@@ -10,12 +10,41 @@ class Scanner {
     public static State current_state = State.START;
 
     public static void main(String[] args) {
-        // get int value of char
         make_map();
         make_array();
-        System.out.println(array.get(current_state.index).get(characterToIndex.get('f')));
-        current_state = array.get(current_state.index).get(characterToIndex.get('a'));
-        System.out.println(current_state);
+        scan_input_file("test_input.c");
+    }
+
+    public static void scan_input_file(String input) {
+        BufferedReader br = null;
+        String line = "";
+        try {
+            br = new BufferedReader(new FileReader(input));
+            while ((line = br.readLine()) != null) {
+                for (int i = 0; i < line.length(); i++) {
+                    char c = line.charAt(i);
+                    int index = -1;
+
+                    try {
+                        index = characterToIndex.get(c);
+                    } catch (Exception e) {
+                        System.out.println("Invalid character: '" + c + "'");
+                        return;
+                    }
+
+                    State next_state = array.get(current_state.index).get(index);
+                    if (next_state.index == State.START.index) {
+                        System.out.println(current_state);
+                    }
+
+                    current_state = next_state;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void make_array() {
@@ -45,25 +74,25 @@ class Scanner {
         String tokens = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-+/*(){}<>=!_; \t\n\f\r";
         for (int i = 0; i < tokens.length(); i++) {
             if (i >= 77) {
-                characterToIndex.put('\0', i);
+                characterToIndex.put(tokens.charAt(i), 77);
                 continue;
             }
-            
+
             characterToIndex.put(tokens.charAt(i), i);
         }
     }
     // Enums for all the states with and index associated
     public enum State {
-        START(0),
-        F(1),
-        FO(2),
-        FOR_KEYWORD(3),
-        FL(4),
-        FLO(5),
-        FLOA(6),
-        FLOAT_KEYWORD(7),
-        I(8),
-        IF_KEYWORD(9),
+        START(0),//
+        F(1),//
+        FO(2),//
+        FOR_KEYWORD(3),//
+        FL(4),//
+        FLO(5),//
+        FLOA(6),//
+        FLOAT_KEYWORD(7),//
+        I(8),//
+        IF_KEYWORD(9),//
         IN(10),
         INT_KEYWORD(11),
         E(12),
