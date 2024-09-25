@@ -8,11 +8,21 @@ class Scanner {
     public static List<List<State>> array = new ArrayList<List<State>>(); 
     public static Map<Character, Integer> characterToIndex = new HashMap<>();
     public static State current_state = State.START;
+    public static int[] final_states = {3, 7, 9, 11, 15, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45};
 
     public static void main(String[] args) {
         make_map();
         make_array();
         scan_input_file("test_input.c");
+    }
+
+    public static boolean isFinal(State state) {
+        for (int i = 0; i < final_states.length; i++) {
+            if (state.index == final_states[i]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void scan_input_file(String input) {
@@ -33,13 +43,15 @@ class Scanner {
                     }
 
                     State next_state = array.get(current_state.index).get(index);
-                    if (next_state.index == State.START.index) {
+                    if (isFinal(current_state)) {
                         System.out.println(current_state);
                     }
 
                     current_state = next_state;
                 }
             }
+
+            br.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -83,16 +95,16 @@ class Scanner {
     }
     // Enums for all the states with and index associated
     public enum State {
-        START(0),//
-        F(1),//
-        FO(2),//
-        FOR_KEYWORD(3),//
-        FL(4),//
-        FLO(5),//
-        FLOA(6),//
-        FLOAT_KEYWORD(7),//
-        I(8),//
-        IF_KEYWORD(9),//
+        START(0),
+        F(1),
+        FO(2),
+        FOR_KEYWORD(3),
+        FL(4),
+        FLO(5),
+        FLOA(6),
+        FLOAT_KEYWORD(7),
+        I(8),
+        IF_KEYWORD(9),
         IN(10),
         INT_KEYWORD(11),
         E(12),

@@ -1,6 +1,6 @@
 while ( 1 < x) x--;
 
-while (true){
+while (1){
 	x = y + x;
 }
 
@@ -26,10 +26,10 @@ else if (x <=0){
 }
 
 
-if (x >= 6){ isNumber = true;}
+if (x >= 6){ isNumber = 1;}
 
 
-if (x != 0){ isZero = false;}
+if (x != 0){ isZero = 0;}
 
 for (int i = 0; i < 15; i ++){
 	x *= 5;
