@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.util.*;
 
 class Scanner {
+    public static List<List<State>> array = new ArrayList<List<State>>(); 
+    public static Map<Character, Integer> characterToIndex = new HashMap<>();
+    public static State current_state = State.START;
+
     public static void main(String[] args) {
         // get int value of char
         make_map();
@@ -13,10 +17,6 @@ class Scanner {
         current_state = array.get(current_state.index).get(characterToIndex.get('a'));
         System.out.println(current_state);
     }
-    public static List<List<State>> array = new ArrayList<List<State>>(); 
-
-    public static Map<Character, Integer> characterToIndex = new HashMap<>();
-    public static State current_state = State.START;
 
     public static void make_array() {
         String csvFile = "transition_table.csv";
@@ -42,8 +42,13 @@ class Scanner {
 
     // Making the map from characters to indexs
     public static void make_map() {
-        String tokens = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-+/*(){}<>=!_ \t\n\f\r";
+        String tokens = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-+/*(){}<>=!_; \t\n\f\r";
         for (int i = 0; i < tokens.length(); i++) {
+            if (i >= 77) {
+                characterToIndex.put('\0', i);
+                continue;
+            }
+            
             characterToIndex.put(tokens.charAt(i), i);
         }
     }
@@ -97,8 +102,7 @@ class Scanner {
         DIVIDEASSIGNMENT(45),
         NULL(46);
         public final int index;
-        State(int index)
-        {
+        State(int index) {
             this.index = index;
         }
     }
