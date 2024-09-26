@@ -41,8 +41,8 @@ class Scanner {
                         System.out.println("Invalid character: '" + c + "'");
                         return;
                     }
-                    // System.out.println(c + " " + current_state + " " + isFinal(current_state));
-                    State next_state = array.get(current_state.index).get(index);                    
+                    State next_state = array.get(current_state.index).get(index);
+                    // System.out.println(c + " " + next_state + " " + current_state + " " + isFinal(current_state));
 
                     if (isFinal(current_state)) {
                         System.out.println(current_state);
