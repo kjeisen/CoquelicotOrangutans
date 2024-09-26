@@ -54,7 +54,7 @@ class Scanner {
                     State next_state = array.get(current_state.index).get(index);
                     // System.out.println(c + " " + next_state + " " + current_state + " " + isFinal(current_state));
 
-                    if (isFinal(current_state) && !isTwoPiece(next_state)) {
+                    if (isFinal(current_state) && !isTwoPiece(next_state) && c != '.') {
                         System.out.println(current_state);
                     }
 
