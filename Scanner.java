@@ -13,7 +13,7 @@ class Scanner {
     public static void main(String[] args) {
         make_map();
         make_array();
-        scan_input_file("test.c");
+        scan_input_file("test_input.c");
     }
 
     public static boolean isFinal(State state) {
@@ -21,6 +21,16 @@ class Scanner {
             if (state.index == final_states[i]) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    public static boolean isTwoPiece(State state) {
+        if (state == State.UNEQUAL || state == State.GREATEROREQUAL || 
+            state == State.LESSOREQUAL || state == State.ADDITIONASSIGNMENT || 
+            state == State.SUBTRACTIONASSIGNMENT || state == State.MULTIPLYASSIGNMENT || state == State.DIVIDEASSIGNMENT ||
+            state == State.EQUAL || state == State.INCREMENT || state == State.DECREMENT) {
+            return true;
         }
         return false;
     }
@@ -44,7 +54,7 @@ class Scanner {
                     State next_state = array.get(current_state.index).get(index);
                     // System.out.println(c + " " + next_state + " " + current_state + " " + isFinal(current_state));
 
-                    if (isFinal(current_state)) {
+                    if (isFinal(current_state) && !isTwoPiece(next_state)) {
                         System.out.println(current_state);
                     }
 
