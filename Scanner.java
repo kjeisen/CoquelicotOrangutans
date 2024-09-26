@@ -8,7 +8,7 @@ class Scanner {
     public static List<List<State>> array = new ArrayList<List<State>>(); 
     public static Map<Character, Integer> characterToIndex = new HashMap<>();
     public static State current_state = State.START;
-    public static int[] final_states = {3, 7, 9, 11, 15, 20, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45};
+    public static int[] final_states = {3, 7, 9, 11, 15, 20, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46};
     public static int[] part_states = {1, 2, 4, 5, 6, 8, 10, 12, 13, 14, 16, 17, 18, 19};
     public static class Pair {
         State state;
@@ -57,7 +57,7 @@ class Scanner {
         if (state == State.UNEQUAL || state == State.GREATEROREQUAL || 
             state == State.LESSOREQUAL || state == State.ADDITIONASSIGNMENT || 
             state == State.SUBTRACTIONASSIGNMENT || state == State.MULTIPLYASSIGNMENT || state == State.DIVIDEASSIGNMENT ||
-            state == State.EQUAL || state == State.INCREMENT || state == State.DECREMENT) {
+            state == State.EQUAL || state == State.INCREMENT ||  state == State.DECREMENT) {
             return true;
         }
         return false;
@@ -82,7 +82,7 @@ class Scanner {
                         return;
                     }
                     State next_state = array.get(current_state.index).get(index);
-                    // System.out.println(c + " " + next_state + " " + current_state + " " + isFinal(current_state));
+                    //System.out.println(c + " " + next_state + " " + current_state + " " + isFinal());
 
                     if (isPart(next_state) || next_state == State.INT_VALUE || next_state == State.FLOAT_VALUE || 
                         next_state == State.VARIABLE || c == '.') {
@@ -193,7 +193,8 @@ class Scanner {
         MULTIPLYASSIGNMENT(43),
         DIVIDE(44),
         DIVIDEASSIGNMENT(45),
-        NULL(46);
+        SEMICOLON(46),
+        NULL(47);
         public final int index;
         State(int index) {
             this.index = index;
