@@ -13,7 +13,7 @@ class Scanner {
     public static void main(String[] args) {
         make_map();
         make_array();
-        scan_input_file("test_input.c");
+        scan_input_file("test.c");
     }
 
     public static boolean isFinal(State state) {
@@ -41,8 +41,9 @@ class Scanner {
                         System.out.println("Invalid character: '" + c + "'");
                         return;
                     }
+                    // System.out.println(c + " " + current_state + " " + isFinal(current_state));
+                    State next_state = array.get(current_state.index).get(index);                    
 
-                    State next_state = array.get(current_state.index).get(index);
                     if (isFinal(current_state)) {
                         System.out.println(current_state);
                     }
