@@ -1,5 +1,3 @@
-while ( 1 < x) x--;
-
-while (1){
-	x = y + x;
+if ( x == 10{
+	x - 5;
 }
