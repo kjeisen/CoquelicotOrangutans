@@ -66,6 +66,7 @@ class Scanner {
         return false;
     }
 
+    // Check if the state needs a value
     public static boolean needsValue(State state) {
         if (state == State.VARIABLE || state == State.INT_VALUE || state == State.FLOAT_VALUE) {
             return true;
@@ -85,6 +86,7 @@ class Scanner {
         return value;
     }
 
+    // Check if the state is a part of a keyword
     public static boolean isKeywordPart(State state) {
         for (int i = 0; i < part_keyword_states.length; i++) {
             if (state.index == part_keyword_states[i]) {
@@ -94,6 +96,7 @@ class Scanner {
         return false;
     }
 
+    // Check if the state is a keyword
     public static boolean isKeyword(State state) {
         if (state == State.FOR_KEYWORD || state == State.FLOAT_KEYWORD || 
             state == State.IF_KEYWORD || state == State.INT_KEYWORD || 
@@ -103,6 +106,7 @@ class Scanner {
         return false;
     }
 
+    // Check if the character is valid for states that need a value
     public static boolean isValidC(char c) {
         for (int i = 0; i < invalid_c_values.length; i++) {
             if (c == invalid_c_values[i]) {
@@ -114,13 +118,12 @@ class Scanner {
 
     // Checks if the current token is unfinished
     public static boolean isUnfinished(State original, State state) {
-
         if (isKeywordPart(original) && !isKeywordPart(state) && !isFinal()) current_state = State.VARIABLE;
         if (state == State.FLOAT_VALUE && original == State.INT_VALUE) return true;
         else if(isPart(original) && state == State.VARIABLE) return true;
         else if ((state == original || isPart(state)) && !isTwoPiece(original) && !isKeywordPart(state)) return true;
         else if (isTwoPiece(state)) return true;
-        else if (isKeywordPart(original) && (state == State.VARIABLE)) return true;
+        else if (isKeywordPart(original) && (state == State.VARIABLE)) return true; // I dont think this is ever used, but im keeping it here just in case
 
         return false;
     }
@@ -150,7 +153,6 @@ class Scanner {
                     // Get the next state
                     State next_state = array.get(current_state.index).get(index);
                     if(isValidC(c)) value += c;
-                    // System.out.println("Current state: " + current_state + " Next state: " + next_state + " Value: " + value + " isFinal: " + isFinal() + " isPart: " + isPart(next_state) + " isTwoPiece: " + isTwoPiece(next_state));
 
                     // If the current state is a final state, add state + token (if any) to the list of tokens
                     if(!isUnfinished(current_state, next_state)) value = addFinal(value);
