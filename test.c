@@ -1,3 +1,3 @@
-if ( x == 10{
-	x - 5;
-}
+while ( 1 < xxx) xxx--;
+float x *= 11.15;
+x - 1;
