@@ -1,3 +1,5 @@
-while ( 1 < xxx) xxx--;
-float x *= 11.15;
-x - 1;
+while (1){
+	x = y + x;
+}
+
+float x = 1.5;
