@@ -4,6 +4,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Authors: Blake Wagner, Andrew Sarver, George Harmon, Kolby Eisenhauer
+ * Reviewers: Meagan Geer, Levi Frashure
+ */
+
 class Scanner {
     private static List<List<State>> array = new ArrayList<List<State>>(); 
     private static Map<Character, Integer> characterToIndex = new HashMap<>();
