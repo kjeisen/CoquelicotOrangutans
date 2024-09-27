@@ -79,10 +79,10 @@ class Scanner {
                         index = characterToIndex.get(c);
                     } catch (Exception e) {
                         System.out.println("Invalid character: '" + c + "'");
-                        return;
+                        System.exit(1);
                     }
+
                     State next_state = array.get(current_state.index).get(index);
-                    // System.out.println(c + " " + next_state + " " + current_state + " " + isFinal(current_state));
 
                     if (isPart(next_state) || next_state == State.INT_VALUE || next_state == State.FLOAT_VALUE || 
                         next_state == State.VARIABLE || c == '.') {
