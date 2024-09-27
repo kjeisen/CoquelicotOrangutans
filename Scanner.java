@@ -65,25 +65,21 @@ class Scanner {
         return false;
     }
 
-    public static boolean isInitialTwoPiece(State state) {
-        if (state == State.ASSIGN || state == State.ADDITION ||
-        state == State.SUBTRACT || state == State.MULTIPLY || 
-        state == State.DIVIDE || state == State.EXCLAIM ||
-        state == State.GREATER || state == State.LESS) {
+    public static boolean needsValue(State state) {
+        if (state == State.VARIABLE || state == State.INT_VALUE || state == State.FLOAT_VALUE) {
             return true;
         }
-
         return false;
     }
 
     // Add the a token to the list of tokens
     public static String addFinal(String value) {
         if (isFinal()) {
-            if (current_state != State.VARIABLE && current_state != State.INT_VALUE && current_state != State.FLOAT_VALUE) value = "";
+            tokens.add(new Pair(current_state, needsValue(current_state) ? value : ""));
+            System.out.println(new Pair(current_state, needsValue(current_state) ? value : ""));
+            if (needsValue(current_state) || (!needsValue(current_state) && value.length() == 0)) value = "";
+            System.out.println((!needsValue(current_state) && value.length() == 0));
 
-            tokens.add(new Pair(current_state, value));
-            System.out.println(new Pair(current_state, value));
-            value = "";
             current_state = State.START;
         }
         return value;
@@ -100,14 +96,12 @@ class Scanner {
 
     // Checks if the current token is unfinished
     public static boolean isUnfinished(State original, State state) {
-        if (isKeywordPart(original) && !isKeywordPart(state)) current_state = State.VARIABLE;
-        if (state == State.FLOAT_VALUE && original == State.INT_VALUE) {
-            return true;
-        } else if(isPart(original) && state == State.VARIABLE) {
-            return true;
-        } else if ((state == original || isPart(state)) && !isTwoPiece(original)) {
-            return true;
-        }
+        if (isKeywordPart(original) && !isKeywordPart(state) && !isFinal()) current_state = State.VARIABLE;
+        if (state == State.FLOAT_VALUE && original == State.INT_VALUE) return true;
+        else if(isPart(original) && state == State.VARIABLE) return true;
+        else if ((state == original || isPart(state)) && !isTwoPiece(original)) return true;
+        else if (isTwoPiece(state)) return true;
+        else if (isKeywordPart(original) && (state == State.VARIABLE)) return true;
         return false;
     }
 
@@ -135,30 +129,14 @@ class Scanner {
 
                     // Get the next state
                     State next_state = array.get(current_state.index).get(index);
-
-                    // If the next state is a part of a bigger token then get the entire token
-                    if (next_state == State.INT_VALUE || next_state == State.FLOAT_VALUE || 
-                        next_state == State.VARIABLE || isTwoPiece(next_state) || isPart(next_state)) {
-                        if(!isInitialTwoPiece(current_state)) addFinal(value);
-                        
-                        // Get entire token loop
-                        for(State original = next_state; isUnfinished(original, next_state) || (isInitialTwoPiece(current_state) && isTwoPiece(next_state));) {
-                            value = value + c;
-                            i++;
-                            c = line.charAt(i);
-
-                            index = characterToIndex.get(c);
-                            current_state = next_state;
-                            next_state = array.get(next_state.index).get(index);
-                        }
-                    }
+                    value += c;
+                    System.out.println("Current state: " + current_state + " Next state: " + next_state + " Character: " + c);
 
                     // If the current state is a final state, add state + token (if any) to the list of tokens
-                    value = addFinal(value);
+                    if(!isUnfinished(current_state, next_state)) value = addFinal(value);
                     current_state = next_state;
                 }
             }
-
             // End of file, print final token + value and add to list of tokens
             tokens.add(new Pair(current_state, value));
             System.out.println(new Pair(current_state, value));
