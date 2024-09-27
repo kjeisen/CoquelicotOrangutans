@@ -1,5 +1,4 @@
-while (1){
-	x = y + x;
+for (int i = 0; i < 10; i++){
+	x = x * 2;
+	x = x / 2;
 }
-
-float x = 1.5;

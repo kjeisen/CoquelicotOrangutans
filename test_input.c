@@ -1,5 +1,5 @@
 while ( 1 < x) x--;
-
+float x = .1;
 while (1){
 	x = y + x;
 }
