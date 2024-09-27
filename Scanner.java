@@ -11,6 +11,7 @@ class Scanner {
     private static final int[] final_states = {3, 7, 9, 11, 15, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46};
     private static final int[] part_states = {1, 2, 4, 5, 6, 8, 10, 12, 13, 14, 16, 17, 18, 19};
     private static final int[] part_keyword_states = {8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+    private static final char[] invalid_c_values = {'=', ';', '+', '-', '*', '/', '(', ')', '{', '}', '<', '>', '!', ' ', '\t', '\n', '\f', '\r'};
     public static ArrayList<Pair> tokens = new ArrayList<>(); // List of all tokens + values
 
     // Pair class to store the state and the value of the token
@@ -31,7 +32,7 @@ class Scanner {
     public static void main(String[] args) {
         make_map();
         make_array();
-        scan_input_file("test.c");
+        scan_input_file("test_input.c");
     }
 
     // Check if the state is a final state
@@ -77,8 +78,7 @@ class Scanner {
         if (isFinal()) {
             tokens.add(new Pair(current_state, needsValue(current_state) ? value : ""));
             System.out.println(new Pair(current_state, needsValue(current_state) ? value : ""));
-            if (needsValue(current_state) || (!needsValue(current_state) && value.length() == 0)) value = "";
-            System.out.println((!needsValue(current_state) && value.length() == 0));
+            if (needsValue(current_state) || (!needsValue(current_state) && value.length() != 0 && isKeyword(current_state))) value = "";
 
             current_state = State.START;
         }
@@ -94,14 +94,34 @@ class Scanner {
         return false;
     }
 
+    public static boolean isKeyword(State state) {
+        if (state == State.FOR_KEYWORD || state == State.FLOAT_KEYWORD || 
+            state == State.IF_KEYWORD || state == State.INT_KEYWORD || 
+            state == State.ELSE_KEYWORD || state == State.WHILE_KEYWORD) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isValidC(char c) {
+        for (int i = 0; i < invalid_c_values.length; i++) {
+            if (c == invalid_c_values[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // Checks if the current token is unfinished
     public static boolean isUnfinished(State original, State state) {
+
         if (isKeywordPart(original) && !isKeywordPart(state) && !isFinal()) current_state = State.VARIABLE;
         if (state == State.FLOAT_VALUE && original == State.INT_VALUE) return true;
         else if(isPart(original) && state == State.VARIABLE) return true;
-        else if ((state == original || isPart(state)) && !isTwoPiece(original)) return true;
+        else if ((state == original || isPart(state)) && !isTwoPiece(original) && !isKeywordPart(state)) return true;
         else if (isTwoPiece(state)) return true;
         else if (isKeywordPart(original) && (state == State.VARIABLE)) return true;
+
         return false;
     }
 
@@ -129,8 +149,8 @@ class Scanner {
 
                     // Get the next state
                     State next_state = array.get(current_state.index).get(index);
-                    value += c;
-                    System.out.println("Current state: " + current_state + " Next state: " + next_state + " Character: " + c);
+                    if(isValidC(c)) value += c;
+                    // System.out.println("Current state: " + current_state + " Next state: " + next_state + " Value: " + value + " isFinal: " + isFinal() + " isPart: " + isPart(next_state) + " isTwoPiece: " + isTwoPiece(next_state));
 
                     // If the current state is a final state, add state + token (if any) to the list of tokens
                     if(!isUnfinished(current_state, next_state)) value = addFinal(value);
@@ -138,8 +158,7 @@ class Scanner {
                 }
             }
             // End of file, print final token + value and add to list of tokens
-            tokens.add(new Pair(current_state, value));
-            System.out.println(new Pair(current_state, value));
+            addFinal(value);
 
             br.close();
 
