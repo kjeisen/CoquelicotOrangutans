@@ -4,11 +4,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Authors: Blake Wagner, Andrew Sarver, George Harmon, Kolby Eisenhauer
- * Reviewers: Meagan Geer, Levi Frashure
- */
-
 class Scanner {
     private static List<List<State>> array = new ArrayList<List<State>>(); 
     private static Map<Character, Integer> characterToIndex = new HashMap<>();
@@ -17,6 +12,7 @@ class Scanner {
     private static final int[] part_states = {1, 2, 4, 5, 6, 8, 10, 12, 13, 14, 16, 17, 18, 19};
     private static final int[] part_keyword_states = {8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
     private static final char[] invalid_c_values = {'=', ';', '+', '-', '*', '/', '(', ')', '{', '}', '<', '>', '!', ' ', '\t', '\n', '\f', '\r'};
+    private static final int[] valid_finished_values = {46, 26, 27, 34, 25};
     public static ArrayList<Pair> tokens = new ArrayList<>(); // List of all tokens + values
 
     // Pair class to store the state and the value of the token
@@ -54,6 +50,16 @@ class Scanner {
     public static boolean isPart(State next_state) {
         for (int i = 0; i < part_states.length; i++) {
             if (next_state.index == part_states[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Check if the state is a valid finished state (does not contain a state that can turn into a variable/number keyword)
+    public static boolean validFinishedState(State state) {
+        for (int i = 0; i < valid_finished_values.length; i++) {
+            if (state.index == valid_finished_values[i]) {
                 return true;
             }
         }
@@ -124,7 +130,8 @@ class Scanner {
     // Checks if the current token is unfinished
     public static boolean isUnfinished(State original, State state) {
         if (isKeywordPart(original) && !isKeywordPart(state) && !isFinal()) current_state = State.VARIABLE;
-        if (state == State.FLOAT_VALUE && original == State.INT_VALUE) return true;
+        if (validFinishedState(original)) return false;
+        else if (state == State.FLOAT_VALUE && original == State.INT_VALUE) return true;        
         else if(isPart(original) && state == State.VARIABLE) return true;
         else if ((state == original || isPart(state)) && !isTwoPiece(original) && !isKeywordPart(state)) return true;
         else if (isTwoPiece(state)) return true;
