@@ -14,10 +14,10 @@ class Scanner {
     private static Map<Character, Integer> characterToIndex = new HashMap<>();
     private static State current_state = State.START;
     private static final int[] final_states = {3, 7, 9, 11, 15, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46};
-    private static final int[] part_states = {1, 2, 4, 5, 6, 8, 10, 12, 13, 14, 16, 17, 18, 19};
-    private static final int[] part_keyword_states = {8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
-    private static final char[] invalid_c_values = {'=', ';', '+', '-', '*', '/', '(', ')', '{', '}', '<', '>', '!', ' ', '\t', '\n', '\f', '\r'};
-    private static final int[] valid_finished_values = {46, 26, 27, 34, 25};
+    private static final int[] part_states = {1, 2, 4, 5, 6, 8, 10, 12, 13, 14, 16, 17, 18, 19}; // States that are part of a keyword, without the keyword itself
+    private static final int[] part_keyword_states = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}; // States that are part of a keyword, including the keyword itself
+    private static final char[] invalid_c_values = {'=', ';', '+', '-', '*', '/', '(', ')', '{', '}', '<', '>', '!', ' ', '\t', '\n', '\f', '\r'}; // Characters that should never show up as a value
+    private static final int[] always_final_states = {25, 26, 27, 34, 46};
     public static ArrayList<Pair> tokens = new ArrayList<>(); // List of all tokens + values
 
     // Pair class to store the state and the value of the token
@@ -61,17 +61,17 @@ class Scanner {
         return false;
     }
 
-    // Check if the state is a valid finished state (does not contain a state that can turn into a variable/number keyword)
+    // Check that a state cannot be turned into a variable/number keyword
     public static boolean validFinishedState(State state) {
-        for (int i = 0; i < valid_finished_values.length; i++) {
-            if (state.index == valid_finished_values[i]) {
+        for (int i = 0; i < always_final_states.length; i++) {
+            if (state.index == always_final_states[i]) {
                 return true;
             }
         }
         return false;
     }
 
-    // Check if the state COULD apart two piece token
+    // Check if the state COULD be apart two piece token
     public static boolean isTwoPiece(State state) {
         if (state == State.UNEQUAL || state == State.GREATEROREQUAL || 
             state == State.LESSOREQUAL || state == State.ADDITIONASSIGNMENT || 
@@ -135,12 +135,13 @@ class Scanner {
     // Checks if the current token is unfinished
     public static boolean isUnfinished(State original, State state) {
         if (isKeywordPart(original) && !isKeywordPart(state) && !isFinal()) current_state = State.VARIABLE;
+
         if (validFinishedState(original)) return false;
         else if (state == State.FLOAT_VALUE && original == State.INT_VALUE) return true;        
         else if(isPart(original) && state == State.VARIABLE) return true;
         else if ((state == original || isPart(state)) && !isTwoPiece(original) && !isKeywordPart(state)) return true;
         else if (isTwoPiece(state)) return true;
-        else if (isKeywordPart(original) && (state == State.VARIABLE)) return true; // I dont think this is ever used, but im keeping it here just in case
+        else if (isKeywordPart(original) && (state == State.VARIABLE)) return true; // This is ever used in ours tests, can't remember why I wrote it so I'm leaving it here just in case
 
         return false;
     }
