@@ -14,6 +14,11 @@ public class Parser {
         }
     }
 
+    public static void parse(ArrayList<Pair> tokens) {
+        listToStack(tokens);
+        Code();
+    }
+
     private static boolean accept(State token) {
         if (stack.isEmpty()) return false; // TODO: double check that we return false intsead of throwing error
         if (stack.peek().state == token) {
