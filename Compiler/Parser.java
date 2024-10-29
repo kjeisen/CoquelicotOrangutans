@@ -176,7 +176,8 @@ public class Parser {
         System.out.println("ASSIGNOPERATOR");
         if(accept(State.ASSIGN) || accept(State.ADDITIONASSIGNMENT) || 
            accept(State.SUBTRACTIONASSIGNMENT) || accept(State.MULTIPLYASSIGNMENT) || 
-           accept(State.DIVIDEASSIGNMENT)) {
+           accept(State.DIVIDEASSIGNMENT) || accept(State.INCREMENT) ||
+           accept(State.DECREMENT)) {
             stack.pop();
         } else {
             throw new Error("Expected an assignment operator but got " + stack.peek().state);
