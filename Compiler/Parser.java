@@ -39,7 +39,7 @@ public class Parser {
         if(accept(State.IF_KEYWORD)) If();
         else if(accept(State.WHILE_KEYWORD)) While();
         else if(accept(State.FOR_KEYWORD)) For();
-        else if(accept(null)) return;
+        else if(stack.isEmpty());
         else {
             Statement();
             expect(State.SEMICOLON);
@@ -48,7 +48,7 @@ public class Parser {
     }
 
     private static void Statement() {
-        if(accept(null)) return;
+        if(stack.isEmpty()) return;
         Assignment();
     }
 
