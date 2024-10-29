@@ -1,15 +1,19 @@
+package Compiler;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+import Compiler.Structures.*;
+
 /**
  * Authors: Blake Wagner, Andrew Sarver, George Harmon, Kolby Eisenhauer
  * Reviewers: Meagan Geer, Levi Frashure
  */
 
-class Scanner {
+public class Scanner {
     private static List<List<State>> array = new ArrayList<List<State>>(); 
     private static Map<Character, Integer> characterToIndex = new HashMap<>();
     private static State current_state = State.START;
@@ -18,31 +22,31 @@ class Scanner {
     private static final int[] part_keyword_states = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}; // States that are part of a keyword, including the keyword itself
     private static final char[] invalid_c_values = {'=', ';', '+', '-', '*', '/', '(', ')', '{', '}', '<', '>', '!', ' ', '\t', '\n', '\f', '\r'}; // Characters that should never show up as a value
     private static final int[] always_final_states = {25, 26, 27, 34, 46};
-    public static ArrayList<Pair> tokens = new ArrayList<>(); // List of all tokens + values
+    private static ArrayList<Pair> tokens = new ArrayList<>(); // List of all tokens + values
 
-    // Pair class to store the state and the value of the token
-    public static class Pair {
-        State state;
-        String value;
-        Pair(State state, String value) {
-            this.state = state;
-            this.value = value;
-        }
-
-        public String toString() {
-            String stateStr = state.toString();
-            if (value.length() > 0) stateStr = stateStr + " : " + value;
-            return stateStr;
-        }
+    public static void init() {
+        if(characterToIndex.isEmpty()) make_map();
+        if(array.isEmpty()) make_array();
     }
-    public static void main(String[] args) {
-        make_map();
-        make_array();
-        scan_input_file("test_input.c");
+
+    // Returns tokens, if there are none, generate them using test_input.c
+    public static ArrayList<Pair> getTokens() {
+        init();
+        if(tokens.isEmpty()) scan_input_file("test_input.c");
+
+        return tokens;
+    }
+
+    // Returns tokens, if there are none, generate them using custom input
+    public static ArrayList<Pair> getTokens(String input) {
+        init();
+        if(tokens.isEmpty()) scan_input_file(input);
+
+        return tokens;
     }
 
     // Check if the state is a final state
-    public static boolean isFinal() {
+    private static boolean isFinal() {
         for (int i = 0; i < final_states.length; i++) {
             if (current_state.index == final_states[i]) {
                 return true;
@@ -52,7 +56,7 @@ class Scanner {
     }
 
     // Check if the state is a part of a bigger token (I, W, WHI, ...)
-    public static boolean isPart(State next_state) {
+    private static boolean isPart(State next_state) {
         for (int i = 0; i < part_states.length; i++) {
             if (next_state.index == part_states[i]) {
                 return true;
@@ -62,7 +66,7 @@ class Scanner {
     }
 
     // Check that a state cannot be turned into a variable/number keyword
-    public static boolean validFinishedState(State state) {
+    private static boolean validFinishedState(State state) {
         for (int i = 0; i < always_final_states.length; i++) {
             if (state.index == always_final_states[i]) {
                 return true;
@@ -72,7 +76,7 @@ class Scanner {
     }
 
     // Check if the state COULD be apart two piece token
-    public static boolean isTwoPiece(State state) {
+    private static boolean isTwoPiece(State state) {
         if (state == State.UNEQUAL || state == State.GREATEROREQUAL || 
             state == State.LESSOREQUAL || state == State.ADDITIONASSIGNMENT || 
             state == State.SUBTRACTIONASSIGNMENT || state == State.MULTIPLYASSIGNMENT || state == State.DIVIDEASSIGNMENT ||
@@ -83,7 +87,7 @@ class Scanner {
     }
 
     // Check if the state needs a value
-    public static boolean needsValue(State state) {
+    private static boolean needsValue(State state) {
         if (state == State.VARIABLE || state == State.INT_VALUE || state == State.FLOAT_VALUE) {
             return true;
         }
@@ -91,7 +95,7 @@ class Scanner {
     }
 
     // Add the a token to the list of tokens
-    public static String addFinal(String value) {
+    private static String addFinal(String value) {
         if (isFinal()) {
             tokens.add(new Pair(current_state, needsValue(current_state) ? value : ""));
             System.out.println(new Pair(current_state, needsValue(current_state) ? value : ""));
@@ -103,7 +107,7 @@ class Scanner {
     }
 
     // Check if the state is a part of a keyword
-    public static boolean isKeywordPart(State state) {
+    private static boolean isKeywordPart(State state) {
         for (int i = 0; i < part_keyword_states.length; i++) {
             if (state.index == part_keyword_states[i]) {
                 return true;
@@ -113,7 +117,7 @@ class Scanner {
     }
 
     // Check if the state is a keyword
-    public static boolean isKeyword(State state) {
+    private static boolean isKeyword(State state) {
         if (state == State.FOR_KEYWORD || state == State.FLOAT_KEYWORD || 
             state == State.IF_KEYWORD || state == State.INT_KEYWORD || 
             state == State.ELSE_KEYWORD || state == State.WHILE_KEYWORD) {
@@ -123,7 +127,7 @@ class Scanner {
     }
 
     // Check if the character is valid for states that need a value
-    public static boolean isValidC(char c) {
+    private static boolean isValidC(char c) {
         for (int i = 0; i < invalid_c_values.length; i++) {
             if (c == invalid_c_values[i]) {
                 return false;
@@ -133,7 +137,7 @@ class Scanner {
     }
 
     // Checks if the current token is unfinished
-    public static boolean isUnfinished(State original, State state) {
+    private static boolean isUnfinished(State original, State state) {
         if (isKeywordPart(original) && !isKeywordPart(state) && !isFinal()) current_state = State.VARIABLE;
 
         if (validFinishedState(original)) return false;
@@ -147,7 +151,7 @@ class Scanner {
     }
 
     // Scanning the input file
-    public static ArrayList<Pair> scan_input_file(String input) {
+    private static ArrayList<Pair> scan_input_file(String input) {
         BufferedReader br = null;
         String line = "";
         String value = "";
@@ -192,7 +196,7 @@ class Scanner {
     }
 
     // Making the transition table
-    public static void make_array() {
+    private static void make_array() {
         String csvFile = "transition_table.csv";
         BufferedReader br = null;
         String line = "";
@@ -219,7 +223,7 @@ class Scanner {
     }
 
     // Making the map from characters to indexs
-    public static void make_map() {
+    private static void make_map() {
         String tokens = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-+/*(){}<>=!_; \t\n\f\r";
         for (int i = 0; i < tokens.length(); i++) {
             if (i >= 77) {
@@ -228,62 +232,6 @@ class Scanner {
             }
 
             characterToIndex.put(tokens.charAt(i), i);
-        }
-    }
-
-    // Enums for all the states with and index associated
-    public enum State {
-        START(0),
-        F(1),
-        FO(2),
-        FOR_KEYWORD(3),
-        FL(4),
-        FLO(5),
-        FLOA(6),
-        FLOAT_KEYWORD(7),
-        I(8),
-        IF_KEYWORD(9),
-        IN(10),
-        INT_KEYWORD(11),
-        E(12),
-        EL(13),
-        ELS(14),
-        ELSE_KEYWORD(15),
-        W(16),
-        WH(17),
-        WHI(18),
-        WHIL(19),
-        WHILE_KEYWORD(20),
-        VARIABLE(21),
-        INT_VALUE(22),
-        FLOAT_VALUE(23),
-        OPENBRACKET(24),
-        CLOSEDBRACKET(25),
-        OPENPARENTHESIS(26),
-        CLOSEDPARENTHESIS(27),
-        EXCLAIM(28),
-        UNEQUAL(29),
-        GREATER(30),
-        GREATEROREQUAL(31),
-        LESS(32),
-        LESSOREQUAL(33),
-        ASSIGN(34),
-        EQUAL(35),
-        ADDITION(36),
-        INCREMENT(37),
-        ADDITIONASSIGNMENT(38),
-        SUBTRACT(39),
-        DECREMENT(40),
-        SUBTRACTIONASSIGNMENT(41),
-        MULTIPLY(42),
-        MULTIPLYASSIGNMENT(43),
-        DIVIDE(44),
-        DIVIDEASSIGNMENT(45),
-        SEMICOLON(46),
-        NULL(47);
-        public final int index;
-        State(int index) {
-            this.index = index;
         }
     }
 }
