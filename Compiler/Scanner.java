@@ -98,7 +98,7 @@ public class Scanner {
     private static String addFinal(String value) {
         if (isFinal()) {
             tokens.add(new Pair(current_state, needsValue(current_state) ? value : ""));
-            System.out.println(new Pair(current_state, needsValue(current_state) ? value : ""));
+            // System.out.println(new Pair(current_state, needsValue(current_state) ? value : ""));
             if (needsValue(current_state) || (!needsValue(current_state) && value.length() != 0 && isKeyword(current_state))) value = "";
 
             current_state = State.START;

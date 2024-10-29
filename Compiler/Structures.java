@@ -1,4 +1,5 @@
 package Compiler;
+
 public class Structures {
     // Pair class to store the state and the value of the token
     public static class Pair {

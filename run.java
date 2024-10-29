@@ -6,6 +6,6 @@ import Compiler.Structures.*;
 public class run {
     
     public static void main(String[] args) {
-        Scanner.getTokens();
+        Parser.parse(Scanner.getTokens("small_test.c"));
     }
 }
