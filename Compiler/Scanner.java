@@ -34,7 +34,7 @@ public class Scanner {
     // Returns tokens, if there are none, generate them using test_input.c
     public static ArrayList<Pair> getTokens() {
         init();
-        if(tokens.isEmpty()) scan_input_file("test_input.c");
+        if(tokens.isEmpty()) scan_input_file("small_test.c");
 
         return tokens;
     }

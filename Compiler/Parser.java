@@ -1,6 +1,7 @@
 package Compiler;
 
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 import Compiler.Structures.*;
@@ -30,7 +31,8 @@ public class Parser {
     }
 
     private static boolean accept(State token) {
-        if (stack.isEmpty()) return false; // TODO: double check that we return false intsead of throwing error
+        if (stack.isEmpty())
+            return false;
         if (stack.peek().state == token) {
             return true;
         }
@@ -38,11 +40,19 @@ public class Parser {
     }
 
     private static void expect(State token) {
+        System.out.println(token);
         if (accept(token)) {
             stack.pop();
         } else {
             printStack();
-            throw new Error("Expected " + token + " but got " + stack.peek().state);
+            try
+            {
+                throw new Error("Expected " + token + " but got " + stack.peek().state);
+            }
+            catch (EmptyStackException e)
+            {
+                throw new Error("Empty Stack");
+            }
         }
     }
 
@@ -111,6 +121,7 @@ public class Parser {
         //System.out.println("IF");
         expect(State.IF_KEYWORD);
         expect(State.OPENPARENTHESIS);
+        System.out.println("reached");
         Expression();
         expect(State.CLOSEDPARENTHESIS);
         if(accept(State.OPENBRACKET)) {
@@ -201,5 +212,6 @@ public class Parser {
             throw new Error("Expected an ASSIGNOP but got " + stack.peek().state);
         }
     }
+
 
 }
