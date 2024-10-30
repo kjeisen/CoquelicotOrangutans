@@ -25,8 +25,10 @@ public class Scanner {
     private static ArrayList<Pair> tokens = new ArrayList<>(); // List of all tokens + values
 
     public static void init() {
+        System.out.println("Initializing Scanner...");
         if(characterToIndex.isEmpty()) make_map();
         if(array.isEmpty()) make_array();
+        System.out.println("Scanner initialized successfully!");
     }
 
     // Returns tokens, if there are none, generate them using test_input.c
@@ -139,12 +141,12 @@ public class Scanner {
     // Checks if the current token is unfinished
     private static boolean isUnfinished(State original, State state) {
         if (isKeywordPart(original) && !isKeywordPart(state) && !isFinal()) current_state = State.VARIABLE;
-
-        if (validFinishedState(original)) return false;
+        
+        if (isTwoPiece(state)) return true;
+        else if (validFinishedState(original)) return false;
         else if (state == State.FLOAT_VALUE && original == State.INT_VALUE) return true;        
         else if(isPart(original) && state == State.VARIABLE) return true;
         else if ((state == original || isPart(state)) && !isTwoPiece(original) && !isKeywordPart(state)) return true;
-        else if (isTwoPiece(state)) return true;
         else if (isKeywordPart(original) && (state == State.VARIABLE)) return true; // This is ever used in ours tests, can't remember why I wrote it so I'm leaving it here just in case
 
         return false;
@@ -155,6 +157,8 @@ public class Scanner {
         BufferedReader br = null;
         String line = "";
         String value = "";
+        String inputSplit[] = input.split("/");
+        System.out.println("Scanning input file \"" + inputSplit[inputSplit.length - 1] + "\"...");
 
         try {
             br = new BufferedReader(new FileReader(input));
@@ -185,6 +189,8 @@ public class Scanner {
             addFinal(value);
 
             br.close();
+
+            System.out.println("Scanner ran successfully!\nTokens created successfully!");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
