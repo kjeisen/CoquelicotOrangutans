@@ -1,10 +1,17 @@
 package Compiler;
 
+import Compiler.Structures.*;
+import Compiler.Structures.Pair;
+import Compiler.Structures.State;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-import Compiler.Structures.*;
+/**
+ * Authors: Andrew Sarver, George Harmon
+ * Reviewers: Megan Geer, Kolby Eisenhauer
+ * Code Testing: Blake Wagner
+ */
 
 public class Parser {
     private static Stack<Pair> stack = new Stack<>();
