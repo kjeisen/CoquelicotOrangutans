@@ -63,6 +63,8 @@ public class Structures {
                 
                 String leftStr = this.left.toString();
                 String rightStr = this.right.toString();
+
+                
                 atomStr = String.format("(%s, %s, %s, , %d, %d)", opStr, leftStr, rightStr, this.cmp, this.dest);
             }
             else if (this.op == OP.JMP || this.op == OP.LBL)
