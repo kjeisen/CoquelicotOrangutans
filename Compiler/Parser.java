@@ -8,7 +8,7 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 /**
- * Authors: Andrew Sarver, George Harmon
+ * Authors: Andrew Sarver, George Harmon, Levi Frashure
  * Reviewers: Megan Geer, Kolby Eisenhauer
  * Code Testing: Blake Wagner
  */
@@ -187,6 +187,7 @@ public class Parser {
             //System.out.println("\tOPENBRACKET");
             stack.pop();
             Code();
+           
         } else {
             //System.out.println("\tNOT OPENBRACKET");
             Code();
