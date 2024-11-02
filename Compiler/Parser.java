@@ -58,11 +58,9 @@ public class Parser {
     }
 
     private static void expect(State token) {
-        System.out.println(token);
         if (accept(token)) {
             stack.pop();
         } else {
-            System.out.println();
             // printStack();
             try
             {
@@ -216,8 +214,8 @@ public class Parser {
            accept(State.LESSOREQUAL) || accept(State.LESS)) {
             stack.pop();
         }  else {
-            System.out.println();
-            printStack();
+            // System.out.println();
+            // printStack();
             throw new Error("Expected an OP but got " + stack.peek().state);
         }
     }
