@@ -63,7 +63,7 @@ public class Parser {
             stack.pop();
         } else {
             System.out.println();
-            printStack();
+            // printStack();
             try
             {
                 throw new Error("Expected " + token + " but got " + stack.peek().state);
@@ -117,14 +117,17 @@ public class Parser {
     }
 
     private static void Expression() {
-        System.out.println("EXPRESSION");
+        // System.out.println("EXPRESSION");
         if(accept(State.INT_VALUE) || accept(State.FLOAT_VALUE) || accept(State.VARIABLE)) {
-            System.out.println("\tINT/FLOAT/VARIABLE");
+            if(accept(State.FLOAT_VALUE) && stack.peek().value.equals(".")) {
+                throw new Error("Expected a FLOAT but got " + stack.peek().value);
+            }
+            // System.out.println("\tINT/FLOAT/VARIABLE");
             stack.pop();
             if(accept(State.CLOSEDPARENTHESIS) || accept(State.SEMICOLON)) return;
             Expression();
         } else if(acceptOps()) {
-            System.out.println("\tEXPRESSION");
+            // System.out.println("\tEXPRESSION");
             stack.pop();
             if(accept(State.CLOSEDPARENTHESIS) || accept(State.SEMICOLON)) return;
             Expression();
@@ -137,7 +140,6 @@ public class Parser {
         //System.out.println("IF");
         expect(State.IF_KEYWORD);
         expect(State.OPENPARENTHESIS);
-        System.out.println("reached");
         Expression();
         expect(State.CLOSEDPARENTHESIS);
         if(accept(State.OPENBRACKET)) {
@@ -205,7 +207,7 @@ public class Parser {
     }
 
     private static void Operator() {
-        System.out.println("OPERATOR");
+        // System.out.println("OPERATOR");
         
         if(accept(State.ADDITION) || accept(State.SUBTRACT) || 
            accept(State.MULTIPLY) || accept(State.DIVIDE) || 
@@ -221,14 +223,13 @@ public class Parser {
     }
 
     private static void AssignOperator() {
-        System.out.println("ASSIGNOPERATOR");
+        // System.out.println("ASSIGNOPERATOR");
         if(accept(State.ASSIGN) || accept(State.ADDITIONASSIGNMENT) || 
            accept(State.SUBTRACTIONASSIGNMENT) || accept(State.MULTIPLYASSIGNMENT) || 
            accept(State.DIVIDEASSIGNMENT) || accept(State.INCREMENT) ||
            accept(State.DECREMENT)) {
             stack.pop();
         } else {
-            System.out.println();
             throw new Error("Expected an ASSIGNOP but got " + stack.peek().state);
         }
     }
