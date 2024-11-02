@@ -6,6 +6,8 @@ import Compiler.Structures.*;
 public class run {
     
     public static void main(String[] args) {
-        Parser.parse(Scanner.getTokens());
+        LabelTable<LabelPair> labelTable = new LabelTable<LabelPair>();
+        labelTable.add(5);
+        // Parser.parse(Scanner.getTokens());
     }
 }

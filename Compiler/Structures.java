@@ -1,11 +1,13 @@
 package Compiler;
 
+import java.util.ArrayList;
 public class Structures {
     // Pair class to store the state and the value of the token
     public static class Pair {
         State state;
         String value;
-        Pair(State state, String value) {
+        
+        public Pair(State state, String value) {
             this.state = state;
             this.value = value;
         }
@@ -17,91 +19,29 @@ public class Structures {
         }
     }
 
-    public static class Atom {
-        OP op;
-        Pair left;
-        Pair right;
-        Pair result;
-        Pair s;
-        Pair d;
-        int cmp;
-        int dest;
-
-        Atom(OP op, Pair left, Pair right, Pair result) {
-            this.op = op;
-            this.left = left;
-            this.right = right;
-            this.result = result;
+    public static class LabelPair {
+        String label;
+        int value;
+        
+        public LabelPair(String label, int value) {
+            this.label = label;
+            this.value = value;
         }
-
-        Atom(OP op, Pair left, Pair result) {
-            this.op = op;
-            this.left = left;
-            this.result = result;
+    
+        public String toString() {
+            return String.format("%s : %d", label, value);
         }
+    }
+    
+    public static class LabelTable<LabelPair> extends ArrayList<LabelPair> {
+        public LabelPair add(int value) {
+            LabelPair label = new LabelPair(System.identityHashCode(value) + "", value); // generates new label
 
-        Atom(OP op, int dest) {
-            this.op = op;
-            this.dest = dest;
+            this.add(label);
+            return label;
         }
-
-        Atom(OP op, Pair left, Pair right, int cmp, int dest) {
-            this.op = op;
-            this.left = left;
-            this.right = right;
-            this.cmp = cmp;
-            this.dest = dest;
-        }
-
-        public String toString()
-        {
-            String atomStr;
-            String opStr = this.op.toString();
-
-            if (this.op == OP.TST)
-            {
-                
-                String leftStr = this.left.toString();
-                String rightStr = this.right.toString();
-
-                
-                atomStr = String.format("(%s, %s, %s, , %d, %d)", opStr, leftStr, rightStr, this.cmp, this.dest);
-            }
-            else if (this.op == OP.JMP || this.op == OP.LBL)
-            {
-                atomStr = String.format("(%s, , , , , %d)", opStr, this.dest);
-            }
-            else if (this.op == OP.NEG || this.op == OP.MOV)
-            {
-                String leftStr = this.left.toString();
-                String resultStr = this.result.toString();
-                atomStr = String.format("(%s, %s, , %s)", opStr, leftStr, resultStr);
-            }
-            else 
-            {
-                String leftStr = this.left.toString();
-                String rightStr = this.right.toString();
-                String resultStr = this.result.toString();
-                atomStr = String.format("(%s, %s, %s, %s)", opStr, leftStr, rightStr, resultStr);
-            }
-
-            return atomStr;
-        }
-
     }
 
-    // Enums for atom OP code
-    public enum OP {
-        ADD,
-        SUB,
-        MUL,
-        DIV,
-        TST,
-        JMP,
-        LBL,
-        MOV,
-        NEG
-    }
 
     // Enums for all the states with and index associated
     public enum State {

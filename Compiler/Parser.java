@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-import Compiler.Structures.*;
+import Compiler.Structures.State;
+import Compiler.Structures.Pair;
 
 public class Parser {
     private static Stack<Pair> stack = new Stack<>();

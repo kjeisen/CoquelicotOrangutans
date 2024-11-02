@@ -6,7 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-import Compiler.Structures.*;
+import Compiler.Structures.Pair;
+import Compiler.Structures.State;
 
 /**
  * Authors: Blake Wagner, Andrew Sarver, George Harmon, Kolby Eisenhauer
