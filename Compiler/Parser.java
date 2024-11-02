@@ -36,6 +36,18 @@ public class Parser {
         }
     }
 
+    private static boolean acceptOps() {
+        if(accept(State.ADDITION) || accept(State.SUBTRACT) || 
+           accept(State.MULTIPLY) || accept(State.DIVIDE) || 
+           accept(State.EQUAL) || accept(State.UNEQUAL) || 
+           accept(State.GREATEROREQUAL) || accept(State.GREATER) || 
+           accept(State.LESSOREQUAL) || accept(State.LESS)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private static boolean accept(State token) {
         if (stack.isEmpty())
             return false;
@@ -50,6 +62,7 @@ public class Parser {
         if (accept(token)) {
             stack.pop();
         } else {
+            System.out.println();
             printStack();
             try
             {
@@ -104,23 +117,20 @@ public class Parser {
     }
 
     private static void Expression() {
-        //System.out.println("EXPRESSION");
-        if(accept(State.CLOSEDPARENTHESIS) || accept(State.SEMICOLON)) return;
-        else if(accept(State.INT_VALUE) || accept(State.FLOAT_VALUE) || accept(State.VARIABLE)) {
-            //System.out.println("\tINT/FLOAT/VARIABLE");
+        System.out.println("EXPRESSION");
+        if(accept(State.INT_VALUE) || accept(State.FLOAT_VALUE) || accept(State.VARIABLE)) {
+            System.out.println("\tINT/FLOAT/VARIABLE");
             stack.pop();
+            if(accept(State.CLOSEDPARENTHESIS) || accept(State.SEMICOLON)) return;
             Expression();
-        } else if(accept(State.OPENPARENTHESIS)) {
-            //System.out.println("\tOPENPARENTHESIS");
+        } else if(acceptOps()) {
+            System.out.println("\tEXPRESSION");
             stack.pop();
+            if(accept(State.CLOSEDPARENTHESIS) || accept(State.SEMICOLON)) return;
             Expression();
-            expect(State.CLOSEDPARENTHESIS);
         } else {
-            //System.out.println("\tEXPRESSION");
-            Operator();
-            Expression();
+            throw new Error("Expected an OP but got " + stack.peek().state);
         }
-        //System.out.println("EXPRESSION-END");
     }
 
     private static void If() {
@@ -195,7 +205,8 @@ public class Parser {
     }
 
     private static void Operator() {
-        //System.out.println("OPERATOR");
+        System.out.println("OPERATOR");
+        
         if(accept(State.ADDITION) || accept(State.SUBTRACT) || 
            accept(State.MULTIPLY) || accept(State.DIVIDE) || 
            accept(State.EQUAL) || accept(State.UNEQUAL) || 
@@ -203,19 +214,21 @@ public class Parser {
            accept(State.LESSOREQUAL) || accept(State.LESS)) {
             stack.pop();
         }  else {
+            System.out.println();
             printStack();
             throw new Error("Expected an OP but got " + stack.peek().state);
         }
     }
 
     private static void AssignOperator() {
-        //System.out.println("ASSIGNOPERATOR");
+        System.out.println("ASSIGNOPERATOR");
         if(accept(State.ASSIGN) || accept(State.ADDITIONASSIGNMENT) || 
            accept(State.SUBTRACTIONASSIGNMENT) || accept(State.MULTIPLYASSIGNMENT) || 
            accept(State.DIVIDEASSIGNMENT) || accept(State.INCREMENT) ||
            accept(State.DECREMENT)) {
             stack.pop();
         } else {
+            System.out.println();
             throw new Error("Expected an ASSIGNOP but got " + stack.peek().state);
         }
     }
