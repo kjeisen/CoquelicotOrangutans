@@ -1,8 +1,6 @@
 
 import Compiler.Parser;
 import Compiler.Scanner;
-import Compiler.Scanner.Symbol;
-import Compiler.Scanner.Token;
 
 public class run {
     

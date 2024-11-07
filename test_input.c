@@ -24,9 +24,7 @@ else if (x <=0){
 	x += 1;
 }
 
-
 if (x >= 6){ isNumber = 1;}
-
 
 if (x != 0){ isZero = 0;}
 

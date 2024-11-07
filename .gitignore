@@ -25,4 +25,4 @@ replay_pid*
 
 # vscode stuff
 .vscode
-atom.txt
+./atom.txt
