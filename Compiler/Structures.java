@@ -42,6 +42,91 @@ public class Structures {
         }
     }
 
+    public static class Atom {
+        OP op;
+        Pair left;
+        Pair right;
+        Pair result;
+        Pair s;
+        Pair d;
+        int cmp;
+        int dest;
+
+        Atom(OP op, Pair left, Pair right, Pair result) {
+            this.op = op;
+            this.left = left;
+            this.right = right;
+            this.result = result;
+        }
+
+        Atom(OP op, Pair left, Pair result) {
+            this.op = op;
+            this.left = left;
+            this.result = result;
+        }
+
+        Atom(OP op, int dest) {
+            this.op = op;
+            this.dest = dest;
+        }
+
+        Atom(OP op, Pair left, Pair right, int cmp, int dest) {
+            this.op = op;
+            this.left = left;
+            this.right = right;
+            this.cmp = cmp;
+            this.dest = dest;
+        }
+
+        public String toString()
+        {
+            String atomStr;
+            String opStr = this.op.toString();
+
+            if (this.op == OP.TST)
+            {
+
+                String leftStr = this.left.toString();
+                String rightStr = this.right.toString();
+                
+                atomStr = String.format("(%s, %s, %s, , %d, %d)", opStr, leftStr, rightStr, this.cmp, this.dest);
+            }
+            else if (this.op == OP.JMP || this.op == OP.LBL)
+            {
+                atomStr = String.format("(%s, , , , , %d)", opStr, this.dest);
+            }
+            else if (this.op == OP.NEG || this.op == OP.MOV)
+            {
+                String leftStr = this.left.toString();
+                String resultStr = this.result.toString();
+                atomStr = String.format("(%s, %s, , %s)", opStr, leftStr, resultStr);
+            }
+            else 
+            {
+                String leftStr = this.left.toString();
+                String rightStr = this.right.toString();
+                String resultStr = this.result.toString();
+                atomStr = String.format("(%s, %s, %s, %s)", opStr, leftStr, rightStr, resultStr);
+            }
+
+            return atomStr;
+        }
+
+    }
+
+    // Enums for atom OP code
+    public enum OP {
+        ADD,
+        SUB,
+        MUL,
+        DIV,
+        TST,
+        JMP,
+        LBL,
+        MOV,
+        NEG
+    }
+
 
     // Enums for all the states with and index associated
     public enum State {
