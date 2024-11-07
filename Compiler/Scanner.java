@@ -6,192 +6,107 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-import Compiler.Structures.Pair;
-import Compiler.Structures.State;
-
-/**
- * Authors: Blake Wagner, Andrew Sarver, George Harmon, Kolby Eisenhauer
- * Reviewers: Meagan Geer, Levi Frashure
- */
-
-public class Scanner {
+class Scanner {
     private static List<List<State>> array = new ArrayList<List<State>>(); 
     private static Map<Character, Integer> characterToIndex = new HashMap<>();
     private static State current_state = State.START;
-    private static final int[] final_states = {3, 7, 9, 11, 15, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46};
-    private static final int[] part_states = {1, 2, 4, 5, 6, 8, 10, 12, 13, 14, 16, 17, 18, 19}; // States that are part of a keyword, without the keyword itself
-    private static final int[] part_keyword_states = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}; // States that are part of a keyword, including the keyword itself
-    private static final char[] invalid_c_values = {'=', ';', '+', '-', '*', '/', '(', ')', '{', '}', '<', '>', '!', ' ', '\t', '\n', '\f', '\r'}; // Characters that should never show up as a value
-    private static final int[] always_final_states = {25, 26, 27, 34, 46};
-    private static ArrayList<Pair> tokens = new ArrayList<>(); // List of all tokens + values
-
-    public static void init() {
-        System.out.println("Initializing Scanner...");
-        if(characterToIndex.isEmpty()) make_map();
-        if(array.isEmpty()) make_array();
-        System.out.println("Scanner initialized successfully!");
+    
+   
+    	
+    public static ArrayList<Token> ScanInputFileForTokens(String fileName)
+    {
+    	make_map();
+        make_array();
+       return scan_input_file(fileName);
     }
-
-    // Returns tokens, if there are none, generate them using test_input.c
-    public static ArrayList<Pair> getTokens() {
-        init();
-        if(tokens.isEmpty()) scan_input_file("small_test.c");
-
-        return tokens;
-    }
-
-    // Returns tokens, if there are none, generate them using custom input
-    public static ArrayList<Pair> getTokens(String input) {
-        init();
-        if(tokens.isEmpty()) scan_input_file(input);
-
-        return tokens;
-    }
-
-    // Check if the state is a final state
-    private static boolean isFinal() {
-        for (int i = 0; i < final_states.length; i++) {
-            if (current_state.index == final_states[i]) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Check if the state is a part of a bigger token (I, W, WHI, ...)
-    private static boolean isPart(State next_state) {
-        for (int i = 0; i < part_states.length; i++) {
-            if (next_state.index == part_states[i]) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Check that a state cannot be turned into a variable/number keyword
-    private static boolean validFinishedState(State state) {
-        for (int i = 0; i < always_final_states.length; i++) {
-            if (state.index == always_final_states[i]) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Check if the state COULD be apart two piece token
-    private static boolean isTwoPiece(State state) {
-        if (state == State.UNEQUAL || state == State.GREATEROREQUAL || 
-            state == State.LESSOREQUAL || state == State.ADDITIONASSIGNMENT || 
-            state == State.SUBTRACTIONASSIGNMENT || state == State.MULTIPLYASSIGNMENT || state == State.DIVIDEASSIGNMENT ||
-            state == State.EQUAL || state == State.INCREMENT ||  state == State.DECREMENT) {
-            return true;
-        }
-        return false;
-    }
-
-    // Check if the state needs a value
-    private static boolean needsValue(State state) {
-        if (state == State.VARIABLE || state == State.INT_VALUE || state == State.FLOAT_VALUE) {
-            return true;
-        }
-        return false;
-    }
-
-    // Add the a token to the list of tokens
-    private static String addFinal(String value) {
-        if (isFinal()) {
-            tokens.add(new Pair(current_state, needsValue(current_state) ? value : ""));
-            // System.out.println(new Pair(current_state, needsValue(current_state) ? value : ""));
-            if (needsValue(current_state) || (!needsValue(current_state) && value.length() != 0 && isKeyword(current_state))) value = "";
-
-            current_state = State.START;
-        }
-        return value;
-    }
-
-    // Check if the state is a part of a keyword
-    private static boolean isKeywordPart(State state) {
-        for (int i = 0; i < part_keyword_states.length; i++) {
-            if (state.index == part_keyword_states[i]) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Check if the state is a keyword
-    private static boolean isKeyword(State state) {
-        if (state == State.FOR_KEYWORD || state == State.FLOAT_KEYWORD || 
-            state == State.IF_KEYWORD || state == State.INT_KEYWORD || 
-            state == State.ELSE_KEYWORD || state == State.WHILE_KEYWORD) {
-            return true;
-        }
-        return false;
-    }
-
-    // Check if the character is valid for states that need a value
-    private static boolean isValidC(char c) {
-        for (int i = 0; i < invalid_c_values.length; i++) {
-            if (c == invalid_c_values[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // Checks if the current token is unfinished
-    private static boolean isUnfinished(State original, State state) {
-        if (isKeywordPart(original) && !isKeywordPart(state) && !isFinal()) current_state = State.VARIABLE;
-        
-        if (isTwoPiece(state)) return true;
-        else if (validFinishedState(original)) return false;
-        else if (state == State.FLOAT_VALUE && original == State.INT_VALUE) return true;        
-        else if(isPart(original) && state == State.VARIABLE) return true;
-        else if ((state == original || isPart(state)) && !isTwoPiece(original) && !isKeywordPart(state)) return true;
-        else if (isKeywordPart(original) && (state == State.VARIABLE)) return true; // This is ever used in ours tests, can't remember why I wrote it so I'm leaving it here just in case
-
-        return false;
-    }
-
+    
     // Scanning the input file
-    private static ArrayList<Pair> scan_input_file(String input) {
+    private static ArrayList<Token> scan_input_file(String input) {
         BufferedReader br = null;
         String line = "";
-        String value = "";
-        String inputSplit[] = input.split("/");
-        System.out.println("Scanning input file \"" + inputSplit[inputSplit.length - 1] + "\"...");
-
+        ArrayList<Token> tokens = new ArrayList<>();
         try {
             br = new BufferedReader(new FileReader(input));
 
             while ((line = br.readLine()) != null) {
                 for (int i = 0; i < line.length(); i++) {
-                    char c = line.charAt(i);
+                    
                     int index = -1;
+                    char c = line.charAt(i);
+                    
+                    index = GetIndex(c);
 
-                    // Check if the character is in the map
-                    try {
-                        index = characterToIndex.get(c);
-                    } catch (Exception e) {
-                        System.out.println("Invalid character: '" + c + "'");
-                        System.exit(1);
-                    }
-
-                    // Get the next state
                     State next_state = array.get(current_state.index).get(index);
-                    if(isValidC(c)) value += c;
-
-                    // If the current state is a final state, add state + token (if any) to the list of tokens
-                    if(!isUnfinished(current_state, next_state)) value = addFinal(value);
+                   
+                    checkErrorState(next_state);
+                    
+                    // move through whitespace
+                    if(next_state == State.START)
+                    {
+                    	continue;
+                    }
+                    
+                    // set the current state
                     current_state = next_state;
+                    
+                    // Go until reaching the start state again that always leaves current state at a final state
+                    int counter = 1;
+                    while(next_state != State.START)
+                    {
+                    	checkErrorState(next_state);
+                    	current_state = next_state;
+                    	
+                    	// Check to see if counter still in range of line length
+                    	if(i+counter < line.length()) {
+                    		char temp_c = line.charAt(i+counter);
+                    		// Get row index of character
+                    		index = GetIndex(temp_c);
+                    		next_state = array.get(current_state.index).get(index);
+                    		counter++;
+                    	} 
+                    	// we reached the end of a line assume end no more input for this line
+                    	// set next state to start, increment the counter still since it gets decremented after
+                    	else
+                    	{
+                    		next_state = State.START;
+                    		counter++;
+                    	}
+                    	
+                    }
+                    // Decrement auto-incremented counter
+                    counter--;
+                    
+                    // Get the value of said values (don't forget i, in, f, etc)
+                    Object value = null;
+                    if(current_state == State.VARIABLE) {
+                    	value = line.substring(i, i+counter);
+                    }
+                    else if(current_state == State.INT_VALUE)
+                    {
+                    	value = Integer.valueOf(line.substring(i, i+counter));
+                    }
+                    else if(current_state == State.FLOAT_VALUE)
+                    {
+                    	value = Float.valueOf(line.substring(i, i+counter));
+                    }
+                    // Picks up i,f,els, and so on
+                    else if(current_state.symbol == Symbol.IDENTIFIER)
+                    {
+                    	value = line.substring(i, i+counter);
+                    }
+                    
+                    Token token = new Token(current_state.symbol, value);
+                    tokens.add(token);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+                    current_state = next_state;
+                    
+                    // Increase index by counter amount and decrement by one since auto of i increment
+                    i += counter-1;
                 }
             }
-            // End of file, print final token + value and add to list of tokens
-            addFinal(value);
+
+        
 
             br.close();
-
-            System.out.println("Scanner ran successfully!\nTokens created successfully!");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -202,14 +117,33 @@ public class Scanner {
         return tokens;
     }
 
+    private static int GetIndex(char c) {
+    	int index = -1;
+    	 try {
+             index = characterToIndex.get(c);
+         } catch (Exception e) {
+             System.out.println("Invalid character: '" + c + "'");
+             System.exit(1);
+         }
+    	 return index;
+    }
+    private static void checkErrorState(State state)
+    {
+    	  if(state == State.NULL)
+          {
+          	System.out.println("UNREADABLE TOKEN");
+              System.exit(1);
+          }
+    }
     // Making the transition table
     private static void make_array() {
-        String csvFile = "transition_table.csv";
+        String csvFile = "State Transition 2D Array11-3-24.csv";
         BufferedReader br = null;
         String line = "";
 
         try {
             br = new BufferedReader(new FileReader(csvFile));
+            //Read first line
             br.readLine();
             
             while ((line = br.readLine()) != null) {
@@ -239,6 +173,118 @@ public class Scanner {
             }
 
             characterToIndex.put(tokens.charAt(i), i);
+        }
+    }
+   
+    public static class Token
+    {
+    	Symbol symbol;
+    	Object value;
+    	Token(Symbol s, Object value)
+    	{
+    		this.symbol = s;
+    		this.value = value;
+    	}
+    	public String toString()
+    	{
+			 return (this.value == null) ? symbol.toString() : symbol.toString() + ": " + value.toString();
+    		
+    	}
+    }
+    public enum Symbol 
+    {
+    	FOR,
+    	ELSE,
+    	WHILE,
+    	IF,
+    	INT,
+    	FLOAT,
+    	INT_VALUE,
+    	FLOAT_VALUE,
+    	IDENTIFIER,
+    	OPEN_BRACKET,
+    	CLOSED_BRACKET,
+    	OPEN_PARENTHESIS,
+    	CLOSED_PARENTHESIS,
+    	NOT_EQUAL,
+    	GREATER_THAN,
+    	GREATER_THAN_EQUAL,
+    	LESS_THAN,
+    	LESS_THAN_EQUAL,
+    	ASSIGNMENT,
+    	EQUAL,
+    	ADDITION,
+    	INCREMENT,
+    	ADDITION_ASSIGNMENT,
+    	SUBTRACT,
+    	DECREMENT,
+    	SUBTRACT_ASSIGNMENT,
+    	MULTIPLY,
+    	MULTIPLY_ASSIGNMENT,
+    	DIVIDE,
+    	DIVIDE_ASSIGNMENT,
+    	SEMICOLON,
+    	END_OF_INPUT
+    }
+    // Enums for all the states with index associated and optional symbol 
+    public enum State {
+        START(0),
+        F(1,Symbol.IDENTIFIER),
+        FO(2,Symbol.IDENTIFIER),
+        FOR_KEYWORD(3,Symbol.FOR),
+        FL(4,Symbol.IDENTIFIER),
+        FLO(5,Symbol.IDENTIFIER),
+        FLOA(6,Symbol.IDENTIFIER),
+        FLOAT_KEYWORD(7,Symbol.FLOAT),
+        I(8,Symbol.IDENTIFIER),
+        IF_KEYWORD(9,Symbol.IF),
+        IN(10,Symbol.IDENTIFIER),
+        INT_KEYWORD(11,Symbol.INT),
+        E(12,Symbol.IDENTIFIER),
+        EL(13,Symbol.IDENTIFIER),
+        ELS(14,Symbol.IDENTIFIER),
+        ELSE_KEYWORD(15,Symbol.ELSE),
+        W(16,Symbol.IDENTIFIER),
+        WH(17,Symbol.IDENTIFIER),
+        WHI(18,Symbol.IDENTIFIER),
+        WHIL(19,Symbol.IDENTIFIER),
+        WHILE_KEYWORD(20,Symbol.WHILE),
+        VARIABLE(21, Symbol.IDENTIFIER),
+        INT_VALUE(22, Symbol.INT_VALUE),
+        FLOAT_VALUE(23, Symbol.FLOAT_VALUE),
+        OPENBRACKET(24, Symbol.OPEN_BRACKET),
+        CLOSEDBRACKET(25,Symbol.CLOSED_BRACKET),
+        OPENPARENTHESIS(26,Symbol.OPEN_PARENTHESIS),
+        CLOSEDPARENTHESIS(27,Symbol.CLOSED_PARENTHESIS),
+        EXCLAIM(28),
+        UNEQUAL(29,Symbol.NOT_EQUAL),
+        GREATER(30,Symbol.GREATER_THAN),
+        GREATEROREQUAL(31,Symbol.GREATER_THAN_EQUAL),
+        LESS(32,Symbol.LESS_THAN),
+        LESSOREQUAL(33, Symbol.LESS_THAN_EQUAL),
+        ASSIGN(34, Symbol.ASSIGNMENT),
+        EQUAL(35, Symbol.EQUAL),
+        ADDITION(36, Symbol.ADDITION),
+        INCREMENT(37, Symbol.INCREMENT),
+        ADDITIONASSIGNMENT(38, Symbol.ADDITION_ASSIGNMENT),
+        SUBTRACT(39, Symbol.SUBTRACT),
+        DECREMENT(40, Symbol.DECREMENT),
+        SUBTRACTIONASSIGNMENT(41, Symbol.SUBTRACT_ASSIGNMENT),
+        MULTIPLY(42, Symbol.MULTIPLY),
+        MULTIPLYASSIGNMENT(43, Symbol.MULTIPLY_ASSIGNMENT),
+        DIVIDE(44, Symbol.DIVIDE),
+        DIVIDEASSIGNMENT(45, Symbol.DIVIDE_ASSIGNMENT),
+        SEMICOLON(46, Symbol.SEMICOLON),
+        NULL(47);
+        public final int index;
+        public final Symbol symbol;
+        State(int index, Symbol s) {
+            this.index = index;
+            this.symbol = s;
+        }
+        State(int index) {
+            this.index = index;
+            this.symbol = null;
         }
     }
 }
