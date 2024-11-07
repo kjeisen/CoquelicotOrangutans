@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-class Scanner {
+public class Scanner {
     private static List<List<State>> array = new ArrayList<List<State>>(); 
     private static Map<Character, Integer> characterToIndex = new HashMap<>();
     private static State current_state = State.START;

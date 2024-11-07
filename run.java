@@ -1,11 +1,14 @@
 
 import Compiler.Parser;
 import Compiler.Scanner;
-import Compiler.Structures.*;
+import Compiler.Scanner.Symbol;
+import Compiler.Scanner.Token;
 
 public class run {
     
     public static void main(String[] args) {
-        Parser.parse(Scanner.getTokens());
-    }
+		var tokens = Scanner.ScanInputFileForTokens("small_test.c");
+
+		Parser.parse(tokens);
+	}
 }

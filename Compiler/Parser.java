@@ -36,16 +36,18 @@ public class Parser {
 			List.of(Symbol.ADDITION, Symbol.SUBTRACT);
 	private static List<Symbol> assignmentOps = List.of(Symbol.ASSIGNMENT, Symbol.ADDITION_ASSIGNMENT, Symbol.MULTIPLY_ASSIGNMENT, 
 			Symbol.SUBTRACT_ASSIGNMENT, Symbol.MULTIPLY_ASSIGNMENT, Symbol.DIVIDE_ASSIGNMENT);
-	public static void main(String[] args) {
+	
+    public static void parse(ArrayList<Token> tokens) {
 		try {
 			createOrResetFile();
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 			return;
 		}
-		var tokens = Scanner.ScanInputFileForTokens("small_test.c");
+        
 		stackOfTokens.push(new Token(Symbol.END_OF_INPUT, null));
-		for(int i = tokens.size()-1; i >= 0; i--)
+
+        for(int i = tokens.size()-1; i >= 0; i--)
 		{
 			stackOfTokens.push(tokens.get(i));
 		}
@@ -59,7 +61,8 @@ public class Parser {
 			System.out.println("Bad Code");
 			System.out.println(e.getMessage());
 		}
-	}
+    }
+
 	private static void IsValidC_Code() throws InvalidSyntaxError, EmptyInputError
 	{
 		Code();
