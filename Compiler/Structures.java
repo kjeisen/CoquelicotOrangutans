@@ -5,40 +5,26 @@ public class Structures {
     // Pair class to store the state and the value of the token
     public static class Pair {
         State state;
+        String str;
         String value;
+        int intValue;
         
         public Pair(State state, String value) {
             this.state = state;
             this.value = value;
         }
 
-        public String toString() {
-            String stateStr = state.toString();
-            if (value.length() > 0) stateStr = stateStr + " : " + value;
-            return stateStr;
+        public Pair(String str, int value) {
+            this.str = str;
+            this.value = value + "";
+            this.intValue = value;
         }
-    }
 
-    public static class LabelPair {
-        String label;
-        int value;
-        
-        public LabelPair(String label, int value) {
-            this.label = label;
-            this.value = value;
-        }
-    
         public String toString() {
-            return String.format("%s : %d", label, value);
-        }
-    }
-    
-    public static class LabelTable<LabelPair> extends ArrayList<LabelPair> {
-        public LabelPair add(int value) {
-            LabelPair label = new LabelPair(System.identityHashCode(value) + "", value); // generates new label
-
-            this.add(label);
-            return label;
+            String outStr = str;
+            if (state != null) outStr = state.toString();
+            if (value.length() > 0) outStr = outStr + " : " + value;
+            return outStr;
         }
     }
 
@@ -51,6 +37,8 @@ public class Structures {
         Pair d;
         int cmp;
         int dest;
+        int labelCount = 0;
+        ArrayList<Pair> labels = new ArrayList<Pair>();
 
         Atom(OP op, Pair left, Pair right, Pair result) {
             this.op = op;
@@ -76,6 +64,13 @@ public class Structures {
             this.right = right;
             this.cmp = cmp;
             this.dest = dest;
+        }
+
+        public Pair add(String name, int value) {
+            Pair label = new Pair("L-" + name + "-" + labelCount++, value); // generates new label
+
+            labels.add(label);
+            return label;
         }
 
         public String toString()
