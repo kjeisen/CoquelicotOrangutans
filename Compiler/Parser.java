@@ -5,15 +5,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import Compiler.Scanner.Symbol;
-import Compiler.Scanner.Token;
+import Compiler.Structures.Symbol;
+import Compiler.Structures.Token;
 
 
 // For the atoms I think expressions is the best to start sionce its the smallest part
@@ -95,7 +92,7 @@ public class Parser {
 		else 
 		{
 			// not cool man
-			throw new EmptyInputError("Either it was empty of had invalid syntax");
+			throw new EmptyInputError("Either it was empty or had invalid syntax");
 		}
 		
 		// If there was at least one match at all then we done
@@ -216,12 +213,6 @@ public class Parser {
 		}
 		makeAtomJump(labelStart);
 		makeAtomLabel(labelEnd);
-		
-			
-		
-		
-		
-		
 	}
 	
 	
@@ -287,9 +278,6 @@ public class Parser {
 		}
 	}
 		
-	
-		
-	
 	private static void Statement() throws InvalidSyntaxError
 	{
 		if(accept(Symbol.IDENTIFIER))
@@ -358,6 +346,7 @@ public class Parser {
 			makeAtomMove(variable, GetStringValueFromToken(answer));
 		}
 	}
+    
 	private static void Assignment() throws InvalidSyntaxError
 	{
 		

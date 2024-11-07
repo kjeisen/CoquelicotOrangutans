@@ -1,181 +1,117 @@
 package Compiler;
-
-import java.util.ArrayList;
 public class Structures {
-    // Pair class to store the state and the value of the token
-    public static class Pair {
-        State state;
-        String str;
-        String value;
-        int intValue;
-        
-        public Pair(State state, String value) {
-            this.state = state;
-            this.value = value;
-        }
 
-        public Pair(String str, int value) {
-            this.str = str;
-            this.value = value + "";
-            this.intValue = value;
-        }
-
-        public String toString() {
-            String outStr = str;
-            if (state != null) outStr = state.toString();
-            if (value.length() > 0) outStr = outStr + " : " + value;
-            return outStr;
-        }
+    public static class Token
+    {
+    	Symbol symbol;
+    	Object value;
+    	Token(Symbol s, Object value)
+    	{
+    		this.symbol = s;
+    		this.value = value;
+    	}
+    	public String toString()
+    	{
+			 return (this.value == null) ? symbol.toString() : symbol.toString() + ": " + value.toString();
+    		
+    	}
     }
-
-    public static class Atom {
-        OP op;
-        Pair left;
-        Pair right;
-        Pair result;
-        Pair s;
-        Pair d;
-        int cmp;
-        int dest;
-        int labelCount = 0;
-        ArrayList<Pair> labels = new ArrayList<Pair>();
-
-        Atom(OP op, Pair left, Pair right, Pair result) {
-            this.op = op;
-            this.left = left;
-            this.right = right;
-            this.result = result;
-        }
-
-        Atom(OP op, Pair left, Pair result) {
-            this.op = op;
-            this.left = left;
-            this.result = result;
-        }
-
-        Atom(OP op, int dest) {
-            this.op = op;
-            this.dest = dest;
-        }
-
-        Atom(OP op, Pair left, Pair right, int cmp, int dest) {
-            this.op = op;
-            this.left = left;
-            this.right = right;
-            this.cmp = cmp;
-            this.dest = dest;
-        }
-
-        public Pair add(String name, int value) {
-            Pair label = new Pair("L-" + name + "-" + labelCount++, value); // generates new label
-
-            labels.add(label);
-            return label;
-        }
-
-        public String toString()
-        {
-            String atomStr;
-            String opStr = this.op.toString();
-
-            if (this.op == OP.TST)
-            {
-
-                String leftStr = this.left.toString();
-                String rightStr = this.right.toString();
-                
-                atomStr = String.format("(%s, %s, %s, , %d, %d)", opStr, leftStr, rightStr, this.cmp, this.dest);
-            }
-            else if (this.op == OP.JMP || this.op == OP.LBL)
-            {
-                atomStr = String.format("(%s, , , , , %d)", opStr, this.dest);
-            }
-            else if (this.op == OP.NEG || this.op == OP.MOV)
-            {
-                String leftStr = this.left.toString();
-                String resultStr = this.result.toString();
-                atomStr = String.format("(%s, %s, , %s)", opStr, leftStr, resultStr);
-            }
-            else 
-            {
-                String leftStr = this.left.toString();
-                String rightStr = this.right.toString();
-                String resultStr = this.result.toString();
-                atomStr = String.format("(%s, %s, %s, %s)", opStr, leftStr, rightStr, resultStr);
-            }
-
-            return atomStr;
-        }
-
+    public enum Symbol 
+    {
+    	FOR,
+    	ELSE,
+    	WHILE,
+    	IF,
+    	INT,
+    	FLOAT,
+    	INT_VALUE,
+    	FLOAT_VALUE,
+    	IDENTIFIER,
+    	OPEN_BRACKET,
+    	CLOSED_BRACKET,
+    	OPEN_PARENTHESIS,
+    	CLOSED_PARENTHESIS,
+    	NOT_EQUAL,
+    	GREATER_THAN,
+    	GREATER_THAN_EQUAL,
+    	LESS_THAN,
+    	LESS_THAN_EQUAL,
+    	ASSIGNMENT,
+    	EQUAL,
+    	ADDITION,
+    	INCREMENT,
+    	ADDITION_ASSIGNMENT,
+    	SUBTRACT,
+    	DECREMENT,
+    	SUBTRACT_ASSIGNMENT,
+    	MULTIPLY,
+    	MULTIPLY_ASSIGNMENT,
+    	DIVIDE,
+    	DIVIDE_ASSIGNMENT,
+    	SEMICOLON,
+    	END_OF_INPUT
     }
-
-    // Enums for atom OP code
-    public enum OP {
-        ADD,
-        SUB,
-        MUL,
-        DIV,
-        TST,
-        JMP,
-        LBL,
-        MOV,
-        NEG
-    }
-
-
-    // Enums for all the states with and index associated
+    // Enums for all the states with index associated and optional symbol 
     public enum State {
         START(0),
-        F(1),
-        FO(2),
-        FOR_KEYWORD(3),
-        FL(4),
-        FLO(5),
-        FLOA(6),
-        FLOAT_KEYWORD(7),
-        I(8),
-        IF_KEYWORD(9),
-        IN(10),
-        INT_KEYWORD(11),
-        E(12),
-        EL(13),
-        ELS(14),
-        ELSE_KEYWORD(15),
-        W(16),
-        WH(17),
-        WHI(18),
-        WHIL(19),
-        WHILE_KEYWORD(20),
-        VARIABLE(21),
-        INT_VALUE(22),
-        FLOAT_VALUE(23),
-        OPENBRACKET(24),
-        CLOSEDBRACKET(25),
-        OPENPARENTHESIS(26),
-        CLOSEDPARENTHESIS(27),
+        F(1,Symbol.IDENTIFIER),
+        FO(2,Symbol.IDENTIFIER),
+        FOR_KEYWORD(3,Symbol.FOR),
+        FL(4,Symbol.IDENTIFIER),
+        FLO(5,Symbol.IDENTIFIER),
+        FLOA(6,Symbol.IDENTIFIER),
+        FLOAT_KEYWORD(7,Symbol.FLOAT),
+        I(8,Symbol.IDENTIFIER),
+        IF_KEYWORD(9,Symbol.IF),
+        IN(10,Symbol.IDENTIFIER),
+        INT_KEYWORD(11,Symbol.INT),
+        E(12,Symbol.IDENTIFIER),
+        EL(13,Symbol.IDENTIFIER),
+        ELS(14,Symbol.IDENTIFIER),
+        ELSE_KEYWORD(15,Symbol.ELSE),
+        W(16,Symbol.IDENTIFIER),
+        WH(17,Symbol.IDENTIFIER),
+        WHI(18,Symbol.IDENTIFIER),
+        WHIL(19,Symbol.IDENTIFIER),
+        WHILE_KEYWORD(20,Symbol.WHILE),
+        VARIABLE(21, Symbol.IDENTIFIER),
+        INT_VALUE(22, Symbol.INT_VALUE),
+        FLOAT_VALUE(23, Symbol.FLOAT_VALUE),
+        OPENBRACKET(24, Symbol.OPEN_BRACKET),
+        CLOSEDBRACKET(25,Symbol.CLOSED_BRACKET),
+        OPENPARENTHESIS(26,Symbol.OPEN_PARENTHESIS),
+        CLOSEDPARENTHESIS(27,Symbol.CLOSED_PARENTHESIS),
         EXCLAIM(28),
-        UNEQUAL(29),
-        GREATER(30),
-        GREATEROREQUAL(31),
-        LESS(32),
-        LESSOREQUAL(33),
-        ASSIGN(34),
-        EQUAL(35),
-        ADDITION(36),
-        INCREMENT(37),
-        ADDITIONASSIGNMENT(38),
-        SUBTRACT(39),
-        DECREMENT(40),
-        SUBTRACTIONASSIGNMENT(41),
-        MULTIPLY(42),
-        MULTIPLYASSIGNMENT(43),
-        DIVIDE(44),
-        DIVIDEASSIGNMENT(45),
-        SEMICOLON(46),
+        UNEQUAL(29,Symbol.NOT_EQUAL),
+        GREATER(30,Symbol.GREATER_THAN),
+        GREATEROREQUAL(31,Symbol.GREATER_THAN_EQUAL),
+        LESS(32,Symbol.LESS_THAN),
+        LESSOREQUAL(33, Symbol.LESS_THAN_EQUAL),
+        ASSIGN(34, Symbol.ASSIGNMENT),
+        EQUAL(35, Symbol.EQUAL),
+        ADDITION(36, Symbol.ADDITION),
+        INCREMENT(37, Symbol.INCREMENT),
+        ADDITIONASSIGNMENT(38, Symbol.ADDITION_ASSIGNMENT),
+        SUBTRACT(39, Symbol.SUBTRACT),
+        DECREMENT(40, Symbol.DECREMENT),
+        SUBTRACTIONASSIGNMENT(41, Symbol.SUBTRACT_ASSIGNMENT),
+        MULTIPLY(42, Symbol.MULTIPLY),
+        MULTIPLYASSIGNMENT(43, Symbol.MULTIPLY_ASSIGNMENT),
+        DIVIDE(44, Symbol.DIVIDE),
+        DIVIDEASSIGNMENT(45, Symbol.DIVIDE_ASSIGNMENT),
+        SEMICOLON(46, Symbol.SEMICOLON),
         NULL(47);
         public final int index;
+        public final Symbol symbol;
+        State(int index, Symbol s) {
+            this.index = index;
+            this.symbol = s;
+        }
         State(int index) {
             this.index = index;
+            this.symbol = null;
         }
     }
+
+
 }
