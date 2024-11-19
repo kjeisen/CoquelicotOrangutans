@@ -14,9 +14,9 @@ public class Scanner {
     	
     public static ArrayList<Token> ScanInputFileForTokens(String fileName)
     {
-    	make_map();
+        make_map();
         make_array();
-       return scan_input_file(fileName);
+        return scan_input_file(fileName);
     }
     
     // Scanning the input file

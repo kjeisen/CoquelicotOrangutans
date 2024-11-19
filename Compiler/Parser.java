@@ -33,13 +33,15 @@ public class Parser {
 			List.of(Symbol.ADDITION, Symbol.SUBTRACT);
 	private static List<Symbol> assignmentOps = List.of(Symbol.ASSIGNMENT, Symbol.ADDITION_ASSIGNMENT, Symbol.MULTIPLY_ASSIGNMENT, 
 			Symbol.SUBTRACT_ASSIGNMENT, Symbol.MULTIPLY_ASSIGNMENT, Symbol.DIVIDE_ASSIGNMENT);
+
+	private static ArrayList<String> atoms = new ArrayList<String>();
 	
-    public static void parse(ArrayList<Token> tokens) {
+    public static ArrayList<String> parse(ArrayList<Token> tokens) {
 		try {
 			createOrResetFile();
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
-			return;
+			return null;
 		}
         
 		stackOfTokens.push(new Token(Symbol.END_OF_INPUT, null));
@@ -58,6 +60,8 @@ public class Parser {
 			System.out.println("Bad Code");
 			System.out.println(e.getMessage());
 		}
+
+		return atoms;
     }
 
 	private static void IsValidC_Code() throws InvalidSyntaxError, EmptyInputError
@@ -566,11 +570,7 @@ public class Parser {
 		sb.append(LHS.toString()+", ");
 		sb.append(RHS.toString()+", ");
 		sb.append(result + ")");
-		try {
-			writeAtomToFile(sb.toString());
-		} catch (IOException e) {
-			throw new Error("Failed to write atom to file");
-		}
+		atoms.add(sb.toString());
 	}
 	public static void makeAtomJump(String dest)
 	{
@@ -578,11 +578,7 @@ public class Parser {
 		sb.append("(JMP, , , , , ");
 		sb.append(dest);
 		sb.append(')');
-		try {
-			writeAtomToFile(sb.toString());
-		} catch (IOException e) {
-			throw new Error("Failed to write atom to file");
-		}
+		atoms.add(sb.toString());
 	}
 	public static void makeAtomLabel(String dest)
 	{
@@ -591,11 +587,7 @@ public class Parser {
 		sb.append(", , , , , ");
 		sb.append(dest);
 		sb.append(')');
-		try {
-			writeAtomToFile(sb.toString());
-		} catch (IOException e) {
-			throw new Error("Failed to write atom to file");
-		}
+		atoms.add(sb.toString());
 	}
 	public static void makeAtomTestJump(String LHS, String RHS, Symbol op, String labelDest)
 	{
@@ -606,11 +598,7 @@ public class Parser {
 		sb.append(", ");
 		sb.append(getCompareNumber(op).toString() + ", ");
 		sb.append(labelDest + ")");
-		try {
-			writeAtomToFile(sb.toString());
-		} catch (IOException e) {
-			throw new Error("Failed to write atom to file");
-		}
+		atoms.add(sb.toString());
 	}
 	public static Integer getCompareNumber(Symbol op)
 	{
@@ -639,11 +627,7 @@ public class Parser {
 		sb.append("(MOV, ");
 		sb.append(RHS.toString() + ", ");
 		sb.append(", " + LHS + ")");
-		try {
-			writeAtomToFile(sb.toString());
-		} catch (IOException e) {
-			throw new Error("Failed to write atom to file");
-		}
+		atoms.add(sb.toString());
 	}
 
 }

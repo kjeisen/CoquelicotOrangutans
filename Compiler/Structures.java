@@ -1,4 +1,7 @@
 package Compiler;
+
+import java.util.ArrayList;
+
 public class Structures {
 
     public static class Token
@@ -113,5 +116,20 @@ public class Structures {
         }
     }
 
+
+    public static class LabelTable extends ArrayList<T>
+    {
+        public LabelTable()
+        {
+            super();
+        }
+        
+        @Override
+        public void add(String label, int index)
+        {
+            this.add(new T(label, index));
+        }
+
+    }
 
 }
