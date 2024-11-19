@@ -19,6 +19,62 @@ public class Structures {
     		
     	}
     }
+
+    public static class Atom
+    {
+        OpCode op;
+        String LHS;
+        String RHS;
+        String result;
+        String dest;
+        String cmp;
+
+        Atom(String atomStr)
+        {
+            atomStr.replace('(', ' ');
+            atomStr.replace(')', ' ');
+            atomStr.strip();
+
+            String[] atomList = atomStr.split(atomStr, ',');
+
+            // Insert null values, remove whitespace
+            for (int i = 1; i < atomList.length; i++)
+            {
+                atomList[i] = atomList[i].equals(" ") ? atomList[i] = null : atomList[i].strip();
+            }
+            
+            this.op = OpCode.valueOf(atomList[0]);
+            this.LHS = atomList[1];
+            this.RHS = atomList[2];
+            this.result = atomList[3];
+            this.cmp = atomList[4];
+            this.dest = atomList[5];
+
+            // Assume for MOV, s (first arg) is RHS and d (last arg) is result
+            // Overwrite if MOV
+            if (this.op == OpCode.MOV)
+            {
+                this.RHS = this.LHS;
+                this.LHS = null;
+            }
+        }
+    }
+
+    public enum OpCode
+    {
+        ADD,
+        MUL,
+        DIV,
+        SUB,
+        LBL,
+        JMP,
+        TST,
+        STO,
+        LOD,
+        MOV,
+        HLT
+    }
+
     public enum Symbol 
     {
     	FOR,

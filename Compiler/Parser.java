@@ -13,7 +13,7 @@ import Compiler.Structures.Symbol;
 import Compiler.Structures.Token;
 
 
-// For the atoms I think expressions is the best to start sionce its the smallest part
+// For the atoms I think expressions is the best to start since its the smallest part
 
 
 public class Parser {
