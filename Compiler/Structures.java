@@ -139,7 +139,6 @@ public class Structures {
         String LHS;
         String RHS;
         String result;
-        String dest;
         int cmp;
 
         public Atom(String atomStr)
@@ -153,7 +152,7 @@ public class Structures {
             // Insert null values, remove whitespace
             for (int i = 1; i < atomList.length; i++)
             {
-                atomList[i] = atomList[i].equals(" ") ? atomList[i] = "0" : atomList[i].strip();
+                atomList[i] = atomList[i].equals(" ") ? "0" : atomList[i].strip();
             }
 
             this.op = OpCode.valueOf(atomList[0]);
@@ -163,10 +162,9 @@ public class Structures {
 
             if (atomList.length > 4) {
                 this.cmp = Integer.parseInt(atomList[4]);
-                this.dest = atomList[5];
+                this.RHS = atomList[5];
             } else {
                 this.cmp = 0;
-                this.dest = "";
             }
 
             // Assume for MOV, s (first arg) is RHS and d (last arg) is result
@@ -205,7 +203,7 @@ public class Structures {
             instruction |= (atom.cmp == 0) ? 0 : (atom.cmp & 0xff) << 24; // CMP
             instruction |= varCheck(instruction, atom.LHS, 20); // RX
             instruction |= varCheck(instruction, atom.RHS, 16); // RY
-            instruction |= (64 & 0xff) << 12; // D (64-bit)            
+            // instruction |= (64 & 0xff) << 12; // D (64-bit value length) -- Line for DISPLACEMENT MODE          
 
             return super.add(instruction);
         }
