@@ -1,8 +1,6 @@
 package Compiler;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,7 +18,6 @@ public class Parser {
 	static Stack<Token> stackOfTokens = new Stack<Token>();
 	private static Set<String> mapOfVariables = new HashSet<String>();
 	private static Stack<Token> expressionVariableStack = new Stack<Token>();
-	private static String atomFile = "atom.txt";
 	private static Integer tempVariableCounter = 0;
 	private static Integer tempLabelCounter = 0;
 	private static List<Symbol> booleanOps = List.of(Symbol.LESS_THAN, 
@@ -36,14 +33,7 @@ public class Parser {
 
 	private static ArrayList<String> atoms = new ArrayList<String>();
 	
-    public static ArrayList<String> parse(ArrayList<Token> tokens) {
-		try {
-			createOrResetFile();
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-			return null;
-		}
-        
+    public static ArrayList<String> parse(ArrayList<Token> tokens) {        
 		stackOfTokens.push(new Token(Symbol.END_OF_INPUT, null));
 
         for(int i = tokens.size()-1; i >= 0; i--)
@@ -499,33 +489,6 @@ public class Parser {
 	{
 		boolean flag = symbol.stream().anyMatch(e -> e == stackOfTokens.peek().symbol);
 		return flag;
-	}
-	public static void createOrResetFile() throws IOException
-	{
-		File file = new File(atomFile);
-			if(!file.createNewFile())
-			{
-			// file exists 
-				file.delete();
-				if(!file.createNewFile())
-				{
-					// it needs to be made so error
-					throw new IOException();
-				}
-			}
-			// yay file made
-		
-	}
-	public static void writeAtomToFile(String atom) throws IOException
-	{
-		FileWriter fw = new FileWriter(atomFile,true);
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.append(atom);
-		bw.append('\n');
-		bw.close();
-		fw.close();
-
-		
 	}
 	public static String destLabelMaker()
 	{

@@ -171,8 +171,7 @@ public class Structures {
             // Overwrite if MOV
             if (this.op == OpCode.MOV)
             {
-                this.RHS = this.LHS;
-                this.LHS = null;
+                this.RHS = atomList[3];
             }
         }
     }
@@ -213,15 +212,20 @@ public class Structures {
             try {
                 instruction |= (Integer.parseInt(var) & 0xff) << offset;
             } catch (Exception e) {
-                // If not a number, it's a variable
-                // Create new variable entry with temporary memory location
-                if (!varMap.containsKey(var)) {
-                    varMap.put(var, this.varCounter);
-                    instruction |= (this.varCounter & 0xff) << offset;
-                    this.varCounter++;
-                    
-                } else {
-                    instruction |= (varMap.get(var) & 0xff) << offset;
+                try {
+                    // Floating point
+                    instruction |= (int)(Double.parseDouble(var)) << offset;
+                } catch (Exception e2) {
+                    // If not a number, it's a variable
+                    // Create new variable entry with temporary memory location
+                    if (!varMap.containsKey(var)) {
+                        varMap.put(var, this.varCounter);
+                        instruction |= (this.varCounter & 0xff) << offset;
+                        this.varCounter++;
+                        
+                    } else {
+                        instruction |= (varMap.get(var) & 0xff) << offset;
+                    }
                 }
             }
 
