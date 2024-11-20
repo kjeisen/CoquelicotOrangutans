@@ -1,6 +1,7 @@
 package Compiler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Structures {
 
@@ -18,61 +19,6 @@ public class Structures {
 			 return (this.value == null) ? symbol.toString() : symbol.toString() + ": " + value.toString();
     		
     	}
-    }
-
-    public static class Atom
-    {
-        OpCode op;
-        String LHS;
-        String RHS;
-        String result;
-        String dest;
-        String cmp;
-
-        Atom(String atomStr)
-        {
-            atomStr.replace('(', ' ');
-            atomStr.replace(')', ' ');
-            atomStr.strip();
-
-            String[] atomList = atomStr.split(atomStr, ',');
-
-            // Insert null values, remove whitespace
-            for (int i = 1; i < atomList.length; i++)
-            {
-                atomList[i] = atomList[i].equals(" ") ? atomList[i] = null : atomList[i].strip();
-            }
-            
-            this.op = OpCode.valueOf(atomList[0]);
-            this.LHS = atomList[1];
-            this.RHS = atomList[2];
-            this.result = atomList[3];
-            this.cmp = atomList[4];
-            this.dest = atomList[5];
-
-            // Assume for MOV, s (first arg) is RHS and d (last arg) is result
-            // Overwrite if MOV
-            if (this.op == OpCode.MOV)
-            {
-                this.RHS = this.LHS;
-                this.LHS = null;
-            }
-        }
-    }
-
-    public enum OpCode
-    {
-        ADD,
-        MUL,
-        DIV,
-        SUB,
-        LBL,
-        JMP,
-        TST,
-        STO,
-        LOD,
-        MOV,
-        HLT
     }
 
     public enum Symbol 
@@ -170,22 +116,144 @@ public class Structures {
             this.index = index;
             this.symbol = null;
         }
+    }    
+    
+    public enum OpCode
+    {
+        ADD(1),
+        MUL(3),
+        DIV(4),
+        SUB(2),
+        LBL(7),
+        JMP(5),
+        TST(6),
+        MOV(8);
+        public final int index;
+        OpCode(int index) {
+            this.index = index;
+        }
+    }
+    public static class Atom
+    {
+        OpCode op;
+        String LHS;
+        String RHS;
+        String result;
+        String dest;
+        int cmp;
+
+        public Atom(String atomStr)
+        {
+            atomStr = atomStr.replace('(', ' ');
+            atomStr = atomStr.replace(')', ' ');
+            atomStr = atomStr.strip();
+            
+            String[] atomList = atomStr.split(",");
+
+            // Insert null values, remove whitespace
+            for (int i = 1; i < atomList.length; i++)
+            {
+                atomList[i] = atomList[i].equals(" ") ? atomList[i] = "0" : atomList[i].strip();
+            }
+
+            this.op = OpCode.valueOf(atomList[0]);
+            this.LHS = atomList[1];
+            this.RHS = atomList[2];
+            this.result = atomList[3];
+
+            if (atomList.length > 4) {
+                this.cmp = Integer.parseInt(atomList[4]);
+                this.dest = atomList[5];
+            } else {
+                this.cmp = 0;
+                this.dest = "";
+            }
+
+            // Assume for MOV, s (first arg) is RHS and d (last arg) is result
+            // Overwrite if MOV
+            if (this.op == OpCode.MOV)
+            {
+                this.RHS = this.LHS;
+                this.LHS = null;
+            }
+        }
     }
 
-
-    public static class LabelTable extends ArrayList<T>
+    public static class Instructions extends ArrayList<Integer>
     {
-        public LabelTable()
+        private int varCounter = 0;
+        public HashMap<String, Integer> varMap = new HashMap<>();
+
+        public Instructions(ArrayList<Atom> atoms)
+        {
+            for (Atom atom : atoms)
+            {
+                this.add(atom);
+            }
+        }
+
+        public Instructions()
         {
             super();
         }
-        
-        @Override
-        public void add(String label, int index)
+
+        public Boolean add(Atom atom)
         {
-            this.add(new T(label, index));
+            // Create instruction
+            // 32-bit Absolute 0000 0 000 0000  0000 0000 0000 0000 0000
+            int instruction = (atom.op.index & 0xff) << 28; // OpCode
+            instruction |= (atom.cmp == 0) ? 0 : (atom.cmp & 0xff) << 24; // CMP
+            instruction |= varCheck(instruction, atom.LHS, 20); // RX
+            instruction |= varCheck(instruction, atom.RHS, 16); // RY
+            instruction |= (64 & 0xff) << 12; // D (64-bit)            
+
+            return super.add(instruction);
         }
 
+        private int varCheck(int instruction, String var, int offset)
+        {
+            try {
+                instruction |= (Integer.parseInt(var) & 0xff) << offset;
+            } catch (Exception e) {
+                // If not a number, it's a variable
+                // Create new variable entry with temporary memory location
+                if (!varMap.containsKey(var)) {
+                    varMap.put(var, this.varCounter);
+                    instruction |= (this.varCounter & 0xff) << offset;
+                    this.varCounter++;
+                    
+                } else {
+                    instruction |= (varMap.get(var) & 0xff) << offset;
+                }
+            }
+
+            return instruction;
+        }
+
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            for (int intVal : this)
+            {
+                String unsplit = Integer.toBinaryString(intVal);
+
+                // Padding
+                while (unsplit.length() < 32)
+                {
+                    unsplit = "0" + unsplit;
+                }
+
+                String[] bytes = unsplit.split("(?=(....)+$)");
+
+                for (String bin : bytes)
+                {
+                    sb.append(bin);
+                    sb.append(" ");
+                }
+                
+                sb.append("\n");
+            }
+            return sb.toString();
+        }
     }
 
 }

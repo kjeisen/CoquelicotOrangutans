@@ -14,5 +14,7 @@ public class CodeGenerator {
         {
             atomList.add(new Atom(atomStr));
         }
+
+        
     }
 }
