@@ -194,7 +194,7 @@ public class Structures {
             super();
         }
 
-        public Boolean add(Atom atom)
+        public Boolean add(int index, Atom atom)
         {
             // Create instruction
             // 32-bit Absolute 0000 0 000 0000  0000 0000 0000 0000 0000
@@ -204,7 +204,14 @@ public class Structures {
             instruction |= varCheck(instruction, atom.RHS, 16); // RY
             // instruction |= (64 & 0xff) << 12; // D (64-bit value length) -- Line for DISPLACEMENT MODE          
 
-            return super.add(instruction);
+            if (index == -1) return super.add(instruction);
+            super.add(index, instruction);
+            return true;
+        }
+
+        public Boolean add(Atom atom)
+        {
+            return this.add(-1, atom);
         }
 
         private int varCheck(int instruction, String var, int offset)
