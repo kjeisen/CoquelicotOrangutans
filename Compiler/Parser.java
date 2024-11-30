@@ -40,15 +40,12 @@ public class Parser {
 		{
 			stackOfTokens.push(tokens.get(i));
 		}
-		System.out.println(stackOfTokens);  
 		try {
 		IsValidC_Code();
-		System.out.println("Good Code");
 		}
 		catch(Error e)
 		{
-			System.out.println("Bad Code");
-			System.out.println(e.getMessage());
+			throw new Error("Bad Code");
 		}
 
 		return atoms;
@@ -389,7 +386,6 @@ public class Parser {
 		}
 		if(op != null)
 		{
-		System.out.println(op);
 		String RHS = GetStringValueFromToken(expressionVariableStack.pop());
 		String LHS = GetStringValueFromToken(expressionVariableStack.pop());
 		var tempName = tempVariableMaker();
@@ -411,7 +407,6 @@ public class Parser {
 		}
 		if(op != null)
 		{
-			System.out.println(op);
 			String RHS = GetStringValueFromToken(expressionVariableStack.pop());
 			String LHS = GetStringValueFromToken(expressionVariableStack.pop());
 			var tempName = tempVariableMaker();
@@ -443,7 +438,6 @@ public class Parser {
 		}
 		if(value != null)
 		{
-			System.out.println(value);
 			expressionVariableStack.push(value);
 		}
 		
@@ -527,8 +521,7 @@ public class Parser {
 			break;
 		
 		default:
-			System.out.println("You shouldnt have called this");
-			break;
+			throw new Error("Not an operator");
 		}
 		sb.append(LHS.toString()+", ");
 		sb.append(RHS.toString()+", ");

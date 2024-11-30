@@ -10,6 +10,6 @@ public class run {
 
 		var atoms = Parser.parse(tokens);
 
-		CodeGenerator.generate(atoms);
+		var instructionFile = CodeGenerator.generate(atoms);
 	}
 }
