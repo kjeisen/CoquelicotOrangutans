@@ -558,7 +558,6 @@ public class Parser {
 	}
 	public static Integer getCompareNumber(Symbol op)
 	{
-		System.out.println(op);
 		int res = 7;
 		switch(op)
 		{
