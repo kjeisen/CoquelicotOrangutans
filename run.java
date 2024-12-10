@@ -16,15 +16,17 @@ import java.util.ArrayList;
 import Compiler.CodeGenerator;
 
 public class run {
+	private static String validArgs[] = {"-b", "-f", "-o"};
     
     public static void main(String[] args) {
 		int backendidx = argFind(args, "-b");
 		int frontendidx = argFind(args, "-f");
+		int optidx = argFind(args, "-o");
 
 		if (frontendidx >= 0) {
 			String filename = "test_input.c";
-			if (args.length > frontendidx + 1 && frontendidx + 1 != backendidx) filename = args[frontendidx + 1];
-
+			if (frontendidx + 1 < args.length && argFind(validArgs, args[frontendidx + 1]) == -1) filename = args[frontendidx + 1];
+			
 			var tokens = Scanner.ScanInputFileForTokens(filename);
 			var atoms = Parser.parse(tokens);
 
@@ -33,7 +35,7 @@ public class run {
 
 		if (backendidx >= 0) {
 			String filename = "atoms.txt";
-			if (args.length > backendidx + 1 && backendidx + 1 != frontendidx) filename = args[backendidx + 1];
+			if (backendidx + 1 < args.length && argFind(validArgs, args[backendidx + 1]) == -1) filename = args[backendidx + 1];
 
 			var atoms = readAtoms(filename);
 
@@ -64,16 +66,16 @@ public class run {
 		printAtoms(atoms, "atoms.txt");
 	}
 
-	public static void printAtoms(ArrayList<String> atoms, String filename) {
+	public static void printAtoms(ArrayList<String> atoms, String file) {
 		try {
-			File output = new File(filename);
+			File output = new File(file);
 			BufferedWriter writer = new BufferedWriter(new FileWriter(output));
 			for(var atom : atoms) {
 				writer.write(atom + "\n");
 			}
 			writer.close();
 		} catch (Exception e) {
-			System.out.println("Error writing atoms to file");
+			System.out.println("Error writing atoms to file: " + file);
 			System.exit(1);
 		}
 	}
@@ -89,7 +91,7 @@ public class run {
 			}
 			reader.close();
 		} catch (Exception e) {
-			System.out.println("Error reading atoms from file");
+			System.out.println("Error reading atoms from file: " + file);
 			System.exit(1);
 		}
 
