@@ -32,6 +32,8 @@ public class run {
 			var tokens = Scanner.ScanInputFileForTokens(filename);
 			var atoms = Parser.parse(tokens);
 
+			if (globaloptidx != -1) GlobalOptimize.optimize(atoms);
+			
 			printAtoms(atoms);
 		}
 
@@ -50,8 +52,6 @@ public class run {
 			} catch (Exception e) {
 				System.out.println("Error creating binary files");
 			}
-
-			if (globaloptidx != -1) GlobalOptimize.optimize(atoms);
 
 			CodeGenerator.generate(atoms);
 		}
