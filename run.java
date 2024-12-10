@@ -17,14 +17,15 @@ import java.util.ArrayList;
 import Compiler.CodeGenerator;
 
 public class run {
-	private static String validArgs[] = {"-b", "-f", "-o"};
+	private static String validArgs[] = {"-b", "-f", "-o", "-l"};
     
     public static void main(String[] args) {
 		int backendidx = argFind(args, "-b");
 		int frontendidx = argFind(args, "-f");
-		int optidx = argFind(args, "-o");
+		int globaloptidx = argFind(args, "-o");
+		int localoptidx = argFind(args, "-l");
 
-		if (frontendidx >= 0) {
+		if (frontendidx != -1) {
 			String filename = "test_input.c";
 			if (frontendidx + 1 < args.length && argFind(validArgs, args[frontendidx + 1]) == -1) filename = args[frontendidx + 1];
 			
@@ -37,7 +38,7 @@ public class run {
 			printAtoms(atoms);
 		}
 
-		if (backendidx >= 0) {
+		if (backendidx != -1) {
 			String filename = "atoms.txt";
 			if (backendidx + 1 < args.length && argFind(validArgs, args[backendidx + 1]) == -1) filename = args[backendidx + 1];
 
@@ -52,6 +53,8 @@ public class run {
 			} catch (Exception e) {
 				System.out.println("Error creating binary files");
 			}
+
+			if (globaloptidx != -1) GlobalOptimize.optimize(atoms);
 
 			CodeGenerator.generate(atoms);
 		}
