@@ -25,25 +25,21 @@ public class run {
 		int globaloptidx = argFind(args, "-o");
 		int localoptidx = argFind(args, "-l");
 
-		ArrayList<String> atoms = new ArrayList<String>();
-
 		if (frontendidx != -1) {
 			String filename = "test_input.c";
 			if (frontendidx + 1 < args.length && argFind(validArgs, args[frontendidx + 1]) == -1) filename = args[frontendidx + 1];
 			
 			var tokens = Scanner.ScanInputFileForTokens(filename);
-			atoms = Parser.parse(tokens);
+			var atoms = Parser.parse(tokens);
 
 			printAtoms(atoms);
 		}
-
-		if (globaloptidx != -1) GlobalOptimize.optimize(atoms);
 
 		if (backendidx != -1) {
 			String filename = "atoms.txt";
 			if (backendidx + 1 < args.length && argFind(validArgs, args[backendidx + 1]) == -1) filename = args[backendidx + 1];
 
-			atoms = readAtoms(filename);
+			var atoms = readAtoms(filename);
 
 			File instr = new File("instructions.bin");
 			File memory = new File("memory.bin");
@@ -54,6 +50,8 @@ public class run {
 			} catch (Exception e) {
 				System.out.println("Error creating binary files");
 			}
+
+			if (globaloptidx != -1) GlobalOptimize.optimize(atoms);
 
 			CodeGenerator.generate(atoms);
 		}

@@ -1,4 +1,2 @@
 (ADD, 2, 3, T0)
 (MOV, T0, , x)
-(ADD, x, 2, x)
-(MOV, 2, , x)
