@@ -1,6 +1,7 @@
 
 import Compiler.Parser;
 import Compiler.Scanner;
+import Compiler.GlobalOptimize;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,6 +28,9 @@ public class run {
 
 			var tokens = Scanner.ScanInputFileForTokens(filename);
 			var atoms = Parser.parse(tokens);
+
+			// Eventually wrap this in an if-statement for optiojnal optimization
+			GlobalOptimize.optimize(atoms);
 
 			printAtoms(atoms);
 		}
