@@ -28,4 +28,6 @@ replay_pid*
 ./atom.txt
 atom.txt
 ./instructions.bin
+instructions.bin
 ./memory.bin
+memory.bin
