@@ -21,7 +21,6 @@ public class run {
 		int backendidx = argFind(args, "-b");
 		int frontendidx = argFind(args, "-f");
 
-
 		if (frontendidx >= 0) {
 			String filename = "test_input.c";
 			if (args.length > frontendidx + 1 && frontendidx + 1 != backendidx) filename = args[frontendidx + 1];
@@ -33,10 +32,21 @@ public class run {
 		}
 
 		if (backendidx >= 0) {
-			System.out.println(backendidx);
 			String filename = "atoms.txt";
 			if (args.length > backendidx + 1 && backendidx + 1 != frontendidx) filename = args[backendidx + 1];
+
 			var atoms = readAtoms(filename);
+
+			File instr = new File("instructions.bin");
+			File memory = new File("memory.bin");
+
+			try {
+				if (instr.exists()) instr.createNewFile();
+				if (memory.exists()) memory.createNewFile();
+			} catch (Exception e) {
+				System.out.println("Error creating binary files");
+			}
+
 			CodeGenerator.generate(atoms);
 		}
 	}
@@ -64,6 +74,7 @@ public class run {
 			writer.close();
 		} catch (Exception e) {
 			System.out.println("Error writing atoms to file");
+			System.exit(1);
 		}
 	}
 
@@ -79,6 +90,7 @@ public class run {
 			reader.close();
 		} catch (Exception e) {
 			System.out.println("Error reading atoms from file");
+			System.exit(1);
 		}
 
 		return atoms;
