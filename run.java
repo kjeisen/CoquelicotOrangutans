@@ -2,6 +2,7 @@
 import Compiler.Parser;
 import Compiler.Scanner;
 import Compiler.GlobalOptimize;
+import Compiler.Optimizer;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -54,6 +55,8 @@ public class run {
 			}
 
 			CodeGenerator.generate(atoms);
+
+			if (localoptidx != -1) Optimizer.localOptimize("instructions.bin");
 		}
 	}
 
