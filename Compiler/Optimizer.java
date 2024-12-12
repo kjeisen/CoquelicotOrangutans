@@ -41,7 +41,7 @@ public class Optimizer
                 if ((instruction[0] == 0x10 && instruction[2] == 0) || (instruction[0] == 0x30 && instruction[2] == 1) || (instruction[0] == 0x20 && instruction[2] == 0)
                  || (instruction[0] == 0x40 && instruction[2] == 1))
                 {
-                    System.out.println("Removing: " + instruction);
+                    System.out.println("Removing: " + prettyPrint(instruction));
                     continue;
                 }
                 instructions.add(instruction);
@@ -66,5 +66,22 @@ public class Optimizer
         {
             e.printStackTrace();
         }
+    }
+
+    private static String prettyPrint(byte[] data)
+    {   
+        StringBuilder sb = new StringBuilder();
+        sb.append("Op: ");
+        sb.append((Integer.toHexString((data[0] & 0xF0) >> 4)));
+        sb.append(", Compare: ");
+        sb.append((Integer.toHexString(data[0] & 0x0F)));
+        sb.append(", Register: ");
+        sb.append(Integer.toHexString((data[1] & 0xF0) >> 4));
+        sb.append(", Memory Address: 0x");
+        sb.append(String.format("%01X",data[1] & 0x0F));
+        sb.append(String.format("%02X",data[2] & 0xFF));
+        sb.append(String.format("%02X", data[3] & 0xFF));
+        sb.append("\n");
+        return sb.toString();
     }
 }
