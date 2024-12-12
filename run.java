@@ -1,7 +1,6 @@
 
 import Compiler.Parser;
 import Compiler.Scanner;
-import Compiler.GlobalOptimize;
 import Compiler.Optimizer;
 
 import java.io.BufferedReader;
@@ -18,12 +17,12 @@ import java.util.ArrayList;
 import Compiler.CodeGenerator;
 
 public class run {
-	private static String validArgs[] = {"-b", "-f", "-o", "-l"};
+	private static String validArgs[] = {"-b", "-f", "-g", "-l"};
     
     public static void main(String[] args) {
 		int backendidx = argFind(args, "-b");
 		int frontendidx = argFind(args, "-f");
-		int globaloptidx = argFind(args, "-o");
+		int globaloptidx = argFind(args, "-g");
 		int localoptidx = argFind(args, "-l");
 
 		if (frontendidx != -1) {
@@ -33,7 +32,7 @@ public class run {
 			var tokens = Scanner.ScanInputFileForTokens(filename);
 			var atoms = Parser.parse(tokens);
 
-			if (globaloptidx != -1) GlobalOptimize.optimize(atoms);
+			if (globaloptidx != -1) Optimizer.optimize(atoms);
 			
 			printAtoms(atoms);
 		}
