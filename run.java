@@ -32,7 +32,7 @@ public class run {
 			var tokens = Scanner.ScanInputFileForTokens(filename);
 			var atoms = Parser.parse(tokens);
 
-			if (globaloptidx != -1) Optimizer.optimize(atoms);
+			if (globaloptidx != -1) Optimizer.globalOptimize(atoms);
 			
 			printAtoms(atoms);
 		}
