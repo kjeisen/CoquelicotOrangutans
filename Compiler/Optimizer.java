@@ -38,7 +38,8 @@ public class Optimizer
             while (fis.read(instruction) != -1)
             {
                 // Simple algebraic transformation, skips unnecessary math
-                if ((instruction[0] == 0x10 && instruction[2] == 0) || (instruction[0] == 0x30 && instruction[2] == 1) )
+                if ((instruction[0] == 0x10 && instruction[2] == 0) || (instruction[0] == 0x30 && instruction[2] == 1) || (instruction[0] == 0x20 && instruction[2] == 0)
+                 || (instruction[0] == 0x40 && instruction[2] == 1))
                 {
                     System.out.println("Removing: " + instruction);
                     continue;
