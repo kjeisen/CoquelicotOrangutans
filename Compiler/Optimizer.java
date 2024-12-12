@@ -18,6 +18,7 @@ public class Optimizer
                 i++;
                 while (!atoms.get(i).substring(1, 4).equals("LBL") && i < atoms.size())
                 {
+                    System.out.println("Removing: " + atoms.get(i));
                     atoms.remove(i);
                     i++;
                 }
@@ -30,19 +31,29 @@ public class Optimizer
         try
         {
             FileInputStream fis = new FileInputStream(filename);
-            FileOutputStream fos = new FileOutputStream("instructions.bin");
             byte[] instruction = new byte[4];
+
+            ArrayList<byte[]> instructions = new ArrayList<byte[]>();
 
             while (fis.read(instruction) != -1)
             {
                 // Simple algebraic transformation, skips unnecessary math
-                if ((instruction[0] == 0x10 && instruction[2] == 0) || (instruction[0] == 0x30 && instruction[2] == 1))
+                if ((instruction[0] == 0x10 && instruction[2] == 0) || (instruction[0] == 0x30 && instruction[2] == 1) )
                 {
+                    System.out.println("Removing: " + instruction);
                     continue;
                 }
-                fos.write(instruction);
+                instructions.add(instruction);
             }
             fis.close();
+
+            FileOutputStream fos = new FileOutputStream("instructions.bin");
+
+            for (byte[] instr : instructions)
+            {
+                fos.write(instr);
+            }
+
             fos.close();
         }
         catch (FileNotFoundException e)
