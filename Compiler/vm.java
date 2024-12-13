@@ -1,5 +1,4 @@
 package Compiler;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -8,6 +7,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Scanner;
+/**
+ * Assumes that instructions start at index 0
+ * Instructions stored as 70100001, ex load a into r1
+ * ONLY ABSOLUTE MODE
+ * Memory locations increment as 0x0,0x01,0x02,0x03 not 0x00, 0x04, 0x08
+ * Floats stored with DataOutputStream.writeFloat
+ * @param args input instruction file
+ */ 
 public class vm {
     static int pc = 0;
     static int ir = 0;
@@ -15,11 +22,12 @@ public class vm {
     static int memory[] = {};
     static float freg[] = new float[5];
     static int memoryLength = 0;
+    static String outputFile = "output.bin";
     public static void main(String[] args) 
     {
         File file = new File(args[0]);
         try {
-            boot(file); // sets memory length too
+            boot(file);
         } catch (FileNotFoundException e) {
             execute = false;
         }
@@ -90,10 +98,11 @@ public class vm {
             }
             
         }
+        scanner.close();
     }
     private static void GetLocation(int location)
     {
-        File file = new File("output.bin");
+        File file = new File(outputFile);
         if(!file.exists()) return;
         try{
         FileInputStream is = new FileInputStream(file);
@@ -121,7 +130,7 @@ public class vm {
     }
     private static void writeMemoryResults()
     {
-        File file = new File("output.bin");
+        File file = new File(outputFile);
         if(file.exists()) file.delete();
         try {
             file.createNewFile();
