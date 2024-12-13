@@ -21,7 +21,7 @@ public class CodeGenerator {
     private static String memoryFilePath = "memory.bin";
     private static String instructionFilePath = "instructions.bin";
     private static HashMap<String, Integer> labelTable = new HashMap<>();
-    private static final int INSTRUCTION_SIZE = 4;
+    private static final int INSTRUCTION_SIZE = 1;
     private static int startOfMemoryOffset = 0;
     private static int variableCount = 0;
 

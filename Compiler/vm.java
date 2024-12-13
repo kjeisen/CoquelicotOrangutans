@@ -1,74 +1,97 @@
 package Compiler;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import Compiler.Structures;
-import Compiler.Structures.OpCode;
 
 public class vm {
     static int pc = 0;
     static int ir = 0;
     static boolean execute = true;
-    static int  memory[] = new int[1000];
+    static int memory[] = {};
     static float freg[] = new float[5];
+    static int memoryLength = 0;
     public static void main(String[] args) 
     {
         File file = new File("instructions.bin");
         try {
-            boot(file);
+            boot(file); // sets memory length too
         } catch (FileNotFoundException e) {
             execute = false;
         }
-
+        boolean flag = false;
         //booted instructs from file
         while(execute)
         {
             ir = memory[pc++];
-            int opcode = (ir & 0xF0000000) >> 28;
-            int r = (ir & 0x00F00000) >> 20;
-            int cmp = (ir & 0x07000000) >> 24;
+            int opcode = ((ir & 0xF0000000) >> 28) & 0x0F; // it was adding ones when I was bitshifting cool then &0x0F get rids of ones
+            int r = ((ir & 0x00F00000) >> 20) & 0x0F;
+            int cmp = ((ir & 0x07000000) >> 24) & 0x07;
             int a = (ir & 0xFFFFF);
-            boolean flag = false;
             switch(opcode)
             {
                 case 0: // clr
-                freg[r] = 0;
-                break;
+                    freg[r] = 0;
+                    break;
                 case 1: // add
-                    freg[r] = freg[r] + (float) memory[a];
+                    freg[r] = freg[r] + Float.intBitsToFloat(memory[a]);
                     break;
                 case 2: // subtract
-                    freg[r] = freg[r] - (float) memory[a];
+                    freg[r] = freg[r] - Float.intBitsToFloat(memory[a]);
                     break;  
                 case 3: // mult
-                    freg[r] = freg[r] * (float) memory[a];
+                    freg[r] = freg[r] * Float.intBitsToFloat(memory[a]);
                     break;
                 case 4: // div
-                    freg[r] = freg[r] / (float) memory[a];
+                    freg[r] = freg[r] / Float.intBitsToFloat(memory[a]);
                     break;
                 case 5: // Jump
                     if(flag)
                     {
+                        flag = false;
                         pc = a;
                     }
+                    break;
                 case 6: // compare
                     flag = compare(cmp,r,a);
+                    break;
                 case 7: // load
-                    freg[r] = (float) memory[a];
+                    freg[r] = Float.intBitsToFloat(memory[a]);
+                    break;
                 case 8: // Store
-                    memory[a] =  Float.floatToRawIntBits(freg[r]);
+                    memory[a] =  Float.floatToIntBits(freg[r]);
+                    break;
                 case 9: // halt
+                    System.out.println("halting");
                     execute = false;
                     break;
             }
         }
+        writeMemoryResults();
 
     }
-
+    private static void writeMemoryResults()
+    {
+        File file = new File("output.bin");
+        if(file.exists()) file.delete();
+        try {
+            file.createNewFile();
+            FileOutputStream os = new FileOutputStream(file);
+            DataOutputStream ds = new DataOutputStream(os);
+            for(int i = 0; i < memoryLength; i++)
+            {
+                ds.writeInt(memory[i]);
+            }
+            ds.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
     private static void boot(File file) throws FileNotFoundException
     {
         FileInputStream is = new FileInputStream(file);
@@ -77,14 +100,18 @@ public class vm {
         try {
             bytes = di.readAllBytes();
             int length = 0;
+            memoryLength = bytes.length / 4;
+            memory = new int[memoryLength];
             for(int i = 0; i < bytes.length; i = i + 4)
             {
-                int mem = bytes[i] << 24;
-                mem |= bytes[i+1] << 16;
-                mem |= bytes[i+2] << 8;
-                mem |= bytes[i+3];
+                int mem = 0;
+                mem |= bytes[i] << 24;
+                mem |= (bytes[i+1] << 16) & 0xFF0000;
+                mem |= (bytes[i+2] << 8) & 0xFF00;
+                mem |= (bytes[i+3]) & 0xFF;
                 memory[length++] = mem;
             }
+            di.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -98,17 +125,17 @@ public class vm {
             case 0: //always
             return true;
             case 1: // equal
-            return freg[r] == (float) memory[a];
+            return freg[r] ==  Float.intBitsToFloat(memory[a]);
             case 2: // less
-            return freg[r] < (float) memory[a];
+            return freg[r] < Float.intBitsToFloat(memory[a]);
             case 3: // greater
-            return freg[r] > (float) memory[a];
+            return freg[r] > Float.intBitsToFloat(memory[a]);
             case 4: // less or equal
-            return freg[r] <= (float) memory[a];
+            return freg[r] <= Float.intBitsToFloat(memory[a]);
             case 5: //greater or equal
-            return freg[r] >= (float) memory[a];
+            return freg[r] >= Float.intBitsToFloat(memory[a]);
             case 6: // not equal
-            return freg[r] != (float) memory[a];
+            return freg[r] != Float.intBitsToFloat(memory[a]);
         }
         execute = false;
         System.out.println("Compare not in range  0-6");

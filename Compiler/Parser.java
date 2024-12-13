@@ -1,7 +1,5 @@
 package Compiler;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -562,17 +560,17 @@ public class Parser {
 		switch(op)
 		{
 		case EQUAL:
-			return res-6;
-		case LESS_THAN:
-			return res-5;
-		case GREATER_THAN:
-			return res-4;
-		case LESS_THAN_EQUAL:
-			return res-3;
-		case GREATER_THAN_EQUAL:
-			return res-2;
-		case NOT_EQUAL:
 			return res-1;
+		case LESS_THAN:
+			return res-2;
+		case GREATER_THAN:
+			return res-3;
+		case LESS_THAN_EQUAL:
+			return res-4;
+		case GREATER_THAN_EQUAL:
+			return res-5;
+		case NOT_EQUAL:
+			return res-6;
 		default:
 			throw new Error("Tried to find comparision number for symbol that not a comparison");
 		}
