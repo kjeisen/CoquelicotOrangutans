@@ -142,7 +142,6 @@ public class vm {
             }
             ds.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -160,14 +159,13 @@ public class vm {
             {
                 int mem = 0;
                 mem |= bytes[i] << 24;
-                mem |= (bytes[i+1] << 16) & 0xFF0000;
+                mem |= (bytes[i+1] << 16) & 0xFF0000; // if you dont do & 0xFF0000 it will break same for the others
                 mem |= (bytes[i+2] << 8) & 0xFF00;
                 mem |= (bytes[i+3]) & 0xFF;
                 memory[length++] = mem;
             }
             di.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         
