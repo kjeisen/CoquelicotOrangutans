@@ -1,6 +1,7 @@
 
 import Compiler.Parser;
 import Compiler.Scanner;
+import Compiler.Optimizer;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,28 +17,45 @@ import java.util.ArrayList;
 import Compiler.CodeGenerator;
 
 public class run {
+	private static String validArgs[] = {"-b", "-f", "-g", "-l"};
     
     public static void main(String[] args) {
 		int backendidx = argFind(args, "-b");
 		int frontendidx = argFind(args, "-f");
+		int globaloptidx = argFind(args, "-g");
+		int localoptidx = argFind(args, "-l");
 
-
-		if (frontendidx >= 0) {
+		if (frontendidx != -1) {
 			String filename = "test_input.c";
-			if (args.length > frontendidx + 1 && frontendidx + 1 != backendidx) filename = args[frontendidx + 1];
-
+			if (frontendidx + 1 < args.length && argFind(validArgs, args[frontendidx + 1]) == -1) filename = args[frontendidx + 1];
+			
 			var tokens = Scanner.ScanInputFileForTokens(filename);
 			var atoms = Parser.parse(tokens);
 
+			if (globaloptidx != -1) Optimizer.globalOptimize(atoms);
+			
 			printAtoms(atoms);
 		}
 
-		if (backendidx >= 0) {
-			System.out.println(backendidx);
+		if (backendidx != -1) {
 			String filename = "atoms.txt";
-			if (args.length > backendidx + 1 && backendidx + 1 != frontendidx) filename = args[backendidx + 1];
+			if (backendidx + 1 < args.length && argFind(validArgs, args[backendidx + 1]) == -1) filename = args[backendidx + 1];
+
 			var atoms = readAtoms(filename);
+
+			File instr = new File("instructions.bin");
+			File memory = new File("memory.bin");
+
+			try {
+				if (instr.exists()) instr.createNewFile();
+				if (memory.exists()) memory.createNewFile();
+			} catch (Exception e) {
+				System.out.println("Error creating binary files");
+			}
+
 			CodeGenerator.generate(atoms);
+
+			if (localoptidx != -1) Optimizer.localOptimize("instructions.bin");
 		}
 	}
 
@@ -54,16 +72,17 @@ public class run {
 		printAtoms(atoms, "atoms.txt");
 	}
 
-	public static void printAtoms(ArrayList<String> atoms, String filename) {
+	public static void printAtoms(ArrayList<String> atoms, String file) {
 		try {
-			File output = new File(filename);
+			File output = new File(file);
 			BufferedWriter writer = new BufferedWriter(new FileWriter(output));
 			for(var atom : atoms) {
 				writer.write(atom + "\n");
 			}
 			writer.close();
 		} catch (Exception e) {
-			System.out.println("Error writing atoms to file");
+			System.out.println("Error writing atoms to file: " + file);
+			System.exit(1);
 		}
 	}
 
@@ -78,7 +97,8 @@ public class run {
 			}
 			reader.close();
 		} catch (Exception e) {
-			System.out.println("Error reading atoms from file");
+			System.out.println("Error reading atoms from file: " + file);
+			System.exit(1);
 		}
 
 		return atoms;
