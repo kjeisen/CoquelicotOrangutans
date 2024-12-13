@@ -24,8 +24,9 @@ public class CodeGenerator {
     private static final int INSTRUCTION_SIZE = 1;
     private static int startOfMemoryOffset = 0;
     private static int variableCount = 0;
+    private static HashMap<String,Integer> VariableToInstuctionMemoryLocation = new HashMap<String, Integer>();
 
-    public static File generate(ArrayList<String> atoms) {
+    public static void generate(ArrayList<String> atoms) {
         System.out.println("Generating code...");
         // reset files
         File instructionFile = new File(instructionFilePath);
@@ -44,7 +45,12 @@ public class CodeGenerator {
         // Add memory to the end of the instructions
         writeMemoryToInstructionFile();
         System.out.println("Memory starts at: 0x" + Integer.toHexString(startOfMemoryOffset * INSTRUCTION_SIZE).toUpperCase());
-        return new File(instructionFilePath);
+         for(var _key : labelTable.keySet())
+         {
+            if(!_key.startsWith("Dest"))
+            VariableToInstuctionMemoryLocation.put(_key, labelTable.get(_key)+startOfMemoryOffset);
+         }
+         System.out.println(VariableToInstuctionMemoryLocation);
         
     }
     private static void GenerateMachineCode(ArrayList<String> atoms)

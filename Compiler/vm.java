@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.util.Scanner;
 public class vm {
     static int pc = 0;
     static int ir = 0;
@@ -17,7 +17,7 @@ public class vm {
     static int memoryLength = 0;
     public static void main(String[] args) 
     {
-        File file = new File("instructions.bin");
+        File file = new File(args[0]);
         try {
             boot(file); // sets memory length too
         } catch (FileNotFoundException e) {
@@ -72,6 +72,51 @@ public class vm {
             }
         }
         writeMemoryResults();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter variable location to view its value, enter x to quit");
+        boolean read = true;
+        while(read)
+        {
+            String location = scanner.nextLine().strip();
+            try {
+                GetLocation(Integer.parseInt(location));
+            }
+            catch(NumberFormatException e) 
+            {
+                if(location.equals("x"))
+                {
+                    read = false;
+                }
+            }
+            
+        }
+    }
+    private static void GetLocation(int location)
+    {
+        File file = new File("output.bin");
+        if(!file.exists()) return;
+        try{
+        FileInputStream is = new FileInputStream(file);
+        DataInputStream di = new DataInputStream(is);
+        var bytes = di.readAllBytes();
+        if(location < 0 || location >= bytes.length)
+        {
+            di.close();
+            return;
+        }
+        int mem = 0;
+        mem |= bytes[location*4] << 24;
+        mem |= (bytes[location*4+1] << 16) & 0xFF0000;
+        mem |= (bytes[location*4+2] << 8) & 0xFF00;
+        mem |= (bytes[location*4+3]) & 0xFF;
+        System.out.println(Float.intBitsToFloat(mem));
+               
+        di.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
 
     }
     private static void writeMemoryResults()
