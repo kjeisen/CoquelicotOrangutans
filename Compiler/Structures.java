@@ -1,8 +1,5 @@
 package Compiler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class Structures {
 
     public static class Token {

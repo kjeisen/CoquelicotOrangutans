@@ -13,12 +13,12 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
-
+import java.util.HashMap;
 import Compiler.CodeGenerator;
 
 public class run {
 	private static String validArgs[] = {"-b", "-f", "-g", "-l"};
-    
+    private static HashMap<String, Integer> variableToMem = null;
     public static void main(String[] args) {
 		int backendidx = argFind(args, "-b");
 		int frontendidx = argFind(args, "-f");
@@ -56,7 +56,9 @@ public class run {
 			CodeGenerator.generate(atoms);
 
 			if (localoptidx != -1) Optimizer.localOptimize("instructions.bin");
+			System.out.println(variableToMem);
 		}
+		
 	}
 
 	public static int argFind(String[] args, String arg) {
