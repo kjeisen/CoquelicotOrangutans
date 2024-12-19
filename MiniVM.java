@@ -59,7 +59,7 @@ public class MiniVM {
 
 	public void execute(boolean verbose, boolean stepwise) {
 		try {
-			reg[PC_REGISTER] = mem[START_ADDRESS];
+			reg[PC_REGISTER] = START_ADDRESS;
 
 			if (verbose) {
 				System.out.println("================================================================");

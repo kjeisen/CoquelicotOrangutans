@@ -55,7 +55,6 @@ public class CodeGenerator {
     }
     private static void GenerateMachineCode(ArrayList<String> atoms)
     {
-        generateInstruction(OpCode.CLR, 0, 0x04, 0);
         for(var atom : atoms)
         {
             String[] tempParts = atom.replace("(", "").replace(")", "").split(",");
